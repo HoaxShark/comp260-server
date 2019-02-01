@@ -1,3 +1,4 @@
+from Scripts import timer
 
 class Room:
 
@@ -18,6 +19,11 @@ class Dungeon:
 
     def __init__(self):
         self.populate_dungeon()
+        self.timer_ref = timer.Timer()
+
+    def update_dungeon(self):
+        self.timer_ref.update_time()
+        print (self.timer_ref.minute)
 
     def populate_dungeon(self):
         self.rooms['Hall'] = Room('Hall', 'A grand hallway with a door leading east', 'The ceiling in the hallway '
