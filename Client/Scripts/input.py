@@ -4,6 +4,7 @@ class Input:
         self.lowered_input = ''
         self.my_socket = my_socket
 
-    def player_input(self):
+    def player_input(self, my_socket):
         current_input = input('Enter Command: ')  # Get input from player
         self.lowered_input = current_input.lower()  # Transform to lowercase
+        my_socket.send(self.lowered_input.encode())

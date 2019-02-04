@@ -1,6 +1,7 @@
 from Scripts import input
 from time import sleep
 
+import threading
 import socket
 
 
@@ -15,21 +16,22 @@ def main():
 
     input_manager = input.Input(my_socket)
 
+    #threading_1 = threading.Thread(target=input_manager.player_input(my_socket))
+    #threading_1.daemon = True
+    #threading_1.start()
+#
+    #threading_2 = threading.Thread(target=receive_data(my_socket))
+    #threading_2.daemon = True
+    #threading_2.start()
+
     while True:
-        # handle player input
-        input_manager.player_input()
-
-        # if player tries to reconnect to the server
-        if input_manager.lowered_input == 'connect':
-            my_socket.connect(("127.0.0.1", 8222))
-
         # send user input to the server then wait for data back
         try:
-            my_socket.send(input_manager.lowered_input.encode())
-            data = my_socket.recv(4096)
-            print(data.decode("utf-8"))
+            input_manager.player_input(my_socket)
+            receive_data(my_socket)
+
         except socket.error:
-            print("Server Lost. Type 'connect' to try and reconnect.")
+            print("Server Lost. Will try and reconnect.")
             connected = False
             while not connected:
                 # try to reconnect, else sleep 2 seconds try again
@@ -44,6 +46,11 @@ def main():
 
     print('Exiting Dungeon')
     my_socket.close()
+
+
+def receive_data(my_socket):
+    data = my_socket.recv(4096)
+    print(data.decode("utf-8"))
 
 
 # If this is __main__ then run entry point

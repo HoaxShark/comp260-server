@@ -25,25 +25,25 @@ class Input:
 
         #  Move between rooms
         elif self.current_input == 'north':
-            if my_dungeon.rooms[my_player.current_room].north_connection != 'none':
+            if my_dungeon.rooms[my_player.current_room].north_connection != '':
                 my_player.current_room = my_dungeon.rooms[my_player.current_room].north_connection
                 return my_dungeon.rooms[my_player.current_room].description
             else:
                 return 'There is no path this way'
         elif self.current_input == 'east':
-            if my_dungeon.rooms[my_player.current_room].east_connection != 'none':
+            if my_dungeon.rooms[my_player.current_room].east_connection != '':
                 my_player.current_room = my_dungeon.rooms[my_player.current_room].east_connection
                 return my_dungeon.rooms[my_player.current_room].description
             else:
                 return 'There is no path this way'
         elif self.current_input == 'south':
-            if my_dungeon.rooms[my_player.current_room].south_connection != 'none':
+            if my_dungeon.rooms[my_player.current_room].south_connection != '':
                 my_player.current_room = my_dungeon.rooms[my_player.current_room].south_connection
                 return my_dungeon.rooms[my_player.current_room].description
             else:
                 return 'There is no path this way'
         elif self.current_input == 'west':
-            if my_dungeon.rooms[my_player.current_room].west_connection != 'none':
+            if my_dungeon.rooms[my_player.current_room].west_connection != '':
                 my_player.current_room = my_dungeon.rooms[my_player.current_room].west_connection
                 return my_dungeon.rooms[my_player.current_room].description
             else:

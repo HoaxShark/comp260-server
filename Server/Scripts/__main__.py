@@ -30,6 +30,7 @@ if __name__ == '__main__':
             client_reply = input_manager.player_input(data.decode("utf-8"), my_player, my_dungeon)
             # send back the data received
             client[0].send(client_reply.encode())
+
         except socket.error:
             print("Client Lost")
             # listen for new connections / waits here until a client connects
