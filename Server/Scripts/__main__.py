@@ -7,13 +7,13 @@ from Scripts import dungeon
 if __name__ == '__main__':
 
     # create the socket
-    mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    my_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     # setup the socket ip address
-    mySocket.bind(("127.0.0.1", 8222))
+    my_socket.bind(("127.0.0.1", 8222))
     # listen for new connections / waits here until a client connects
-    mySocket.listen(5)
+    my_socket.listen(5)
     # new client has connected
-    client = mySocket.accept()
+    client = my_socket.accept()
 
     # generate dungeon
     my_dungeon = dungeon.Dungeon()
@@ -32,3 +32,7 @@ if __name__ == '__main__':
             client[0].send(client_reply.encode())
         except socket.error:
             print("Client Lost")
+            # listen for new connections / waits here until a client connects
+            my_socket.listen(5)
+            # new client has connected
+            client = my_socket.accept()
