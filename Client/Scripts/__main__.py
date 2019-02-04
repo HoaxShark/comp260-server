@@ -1,8 +1,8 @@
 from Scripts import player
 from Scripts import dungeon
-from Scripts import window
+#from Scripts import window
 import sys
-from PyQt5 import QtGui
+#from PyQt5 import QtGui
 
 
 # Entry point of programme
