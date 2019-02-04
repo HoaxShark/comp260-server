@@ -26,36 +26,36 @@ class Player:
 
     def player_input(self):
         current_input = input('Enter Command: ')  # Get input from player
-        lowered_input = current_input.lower()  # Transform to lowercase
+        self.lowered_input = current_input.lower()  # Transform to lowercase
 
         #  Exit game if exit is entered
-        if lowered_input == 'exit':
+        if self.lowered_input == 'exit':
             self.game_running = False
             return
 
-        elif lowered_input == 'look':
+        elif self.lowered_input == 'look':
             print(self.dungeon_ref.rooms[self.current_room].look_description)
 
         #  Move between rooms
-        elif lowered_input == 'north':
+        elif self.lowered_input == 'north':
             if self.dungeon_ref.rooms[self.current_room].north_connection != 'none':
                 self.current_room = self.dungeon_ref.rooms[self.current_room].north_connection
                 print(self.dungeon_ref.rooms[self.current_room].description)
             else:
                 print('There is no path this way')
-        elif lowered_input == 'east':
+        elif self.lowered_input == 'east':
             if self.dungeon_ref.rooms[self.current_room].east_connection != 'none':
                 self.current_room = self.dungeon_ref.rooms[self.current_room].east_connection
                 print(self.dungeon_ref.rooms[self.current_room].description)
             else:
                 print('There is no path this way')
-        elif lowered_input == 'south':
+        elif self.lowered_input == 'south':
             if self.dungeon_ref.rooms[self.current_room].south_connection != 'none':
                 self.current_room = self.dungeon_ref.rooms[self.current_room].south_connection
                 print(self.dungeon_ref.rooms[self.current_room].description)
             else:
                 print('There is no path this way')
-        elif lowered_input == 'west':
+        elif self.lowered_input == 'west':
             if self.dungeon_ref.rooms[self.current_room].west_connection != 'none':
                 self.current_room = self.dungeon_ref.rooms[self.current_room].west_connection
                 print(self.dungeon_ref.rooms[self.current_room].description)
@@ -63,7 +63,7 @@ class Player:
                 print('There is no path this way')
 
         #  Print list of commands
-        elif lowered_input == 'help':
+        elif self.lowered_input == 'help':
             self.print_help()
 
         else:
