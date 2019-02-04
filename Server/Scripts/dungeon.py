@@ -1,5 +1,6 @@
 from Scripts import timer
 
+
 class Room:
 
     def __init__(self, name, description, look_description, north='', east='', south='', west=''):
@@ -20,10 +21,11 @@ class Dungeon:
     def __init__(self):
         self.populate_dungeon()
         self.timer_ref = timer.Timer()
+        self.players = {}  # dictionary of all players in the dungeon
 
     def update_dungeon(self):
         self.timer_ref.update_time()
-        print (self.timer_ref.minute)
+        print(self.timer_ref.minute)
 
     def populate_dungeon(self):
         self.rooms['Hall'] = Room('Hall', 'A grand hallway with a door leading east', 'The ceiling in the hallway '

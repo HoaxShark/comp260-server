@@ -1,9 +1,5 @@
-from Scripts import player
-from Scripts import dungeon
+from Scripts import input
 import socket
-#from Scripts import window
-import sys
-#from PyQt5 import QtGui
 
 
 # Entry point of programme
@@ -14,16 +10,14 @@ def main():
     # connect to the IP address using port
     my_socket.connect(("127.0.0.1", 8222))
 
-    dungeon_ref = dungeon.Dungeon()
-    player_ref = player.Player(dungeon_ref, 'Hall')
-    print(player_ref.game_running)
+    input_manager = input.Input()
 
-    while player_ref.game_running:
+    while True:
+
+        input_manager.player_input()
+        my_socket.send(input_manager.lowered_input.encode())
         data = my_socket.recv(4096)
         print(data.decode("utf-8"))
-        player_ref.player_input()
-        my_socket.send(player_ref.lowered_input.encode())
-        #dungeon_ref.update_dungeon()
 
     print('Exiting Dungeon')
 

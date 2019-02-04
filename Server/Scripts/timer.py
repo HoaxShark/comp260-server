@@ -1,5 +1,6 @@
 import time
 
+
 # Keeps track of the minutes and hours
 class Timer:
 
@@ -8,6 +9,7 @@ class Timer:
         self.hour = 0
         self.start_time = time.clock()
         self.last_time = self.start_time
+        self.current_time = ''
 
     def update_time(self):
         self.current_time = time.clock()
