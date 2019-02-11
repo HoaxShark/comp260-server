@@ -25,7 +25,7 @@ def receive_thread(server_socket):
             except socket.error:
                 my_socket = None
                 is_connected = False
-                print("Server lost.")
+                print("Server dost.")
 
 
 # Entry point of programme
