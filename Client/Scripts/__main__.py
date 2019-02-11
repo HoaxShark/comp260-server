@@ -1,26 +1,40 @@
 from Scripts import input
 from time import sleep
+from queue import *
 
 import threading
 import socket
 
+# queue that holds all messages from the server
+messageQueue = Queue()
+is_connected = False
+my_socket = None
+is_running = True
+
+
+def receive_thread(server_socket):
+    global is_connected
+    global is_running
+    global my_socket
+
+    while is_running:
+        if is_connected:
+            try:
+                messageQueue.put(server_socket.recv(4096).decode("utf-8"))
+                print("Adding to queue")
+            except socket.error:
+                my_socket = None
+                is_connected = False
+                print("Server lost.")
+
 
 # Entry point of programme
 def main():
-
-    is_connected = False
-    my_socket = None
-    is_running = True
+    global is_connected
+    global my_socket
+    global is_running
 
     input_manager = input.Input(my_socket)
-
-    #threading_1 = threading.Thread(target=input_manager.player_input(my_socket))
-    #threading_1.daemon = True
-    #threading_1.start()
-#
-    #threading_2 = threading.Thread(target=receive_data(my_socket))
-    #threading_2.daemon = True
-    #threading_2.start()
 
     while is_running:
         # if not connected loop here trying to connect until success
@@ -28,11 +42,15 @@ def main():
             if my_socket == None:
                 # create a socket
                 my_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                my_receive_thread = threading.Thread(target=receive_thread, args=(my_socket,))
+                my_receive_thread.start()
+
             try:
                 # connect to the IP address using port
                 my_socket.connect(("127.0.0.1", 8222))
                 is_connected = True
                 print("Connected to Server.")
+
             except socket.error:
                 is_connected = False
                 print("no luck connecting, try again in 2 secs")
@@ -42,20 +60,18 @@ def main():
         while is_connected:
             try:
                 input_manager.player_input(my_socket)
-                receive_data(my_socket)
+                sleep(0.5)
 
             except socket.error:
                 print("Server Lost. Will try and reconnect.")
                 my_socket = None
                 is_connected = False
 
+            while messageQueue.qsize() > 0:
+                print(messageQueue.get())
+
     print('Exiting Dungeon')
     my_socket.close()
-
-
-def receive_data(my_socket):
-    data = my_socket.recv(4096)
-    print(data.decode("utf-8"))
 
 
 # If this is __main__ then run entry point
