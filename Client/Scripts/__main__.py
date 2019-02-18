@@ -1,7 +1,11 @@
 from Scripts import input
+from Scripts import window
+
+from PyQt5.QtWidgets import QApplication
 from time import sleep
 from queue import *
 
+import sys
 import threading
 import socket
 
@@ -10,6 +14,8 @@ messageQueue = Queue()
 is_connected = False
 my_socket = None
 is_running = True
+app = QApplication(sys.argv)
+my_window = window.Window()
 
 
 def receive_thread(server_socket):
@@ -37,6 +43,11 @@ def main():
     input_manager = input.Input(my_socket)
 
     while is_running:
+        # draw the gui window
+        my_window.window_draw()
+        # exit the gui window
+        sys.exit(app.exec_())
+
         # if not connected loop here trying to connect until success
         while not is_connected:
             if my_socket == None:
