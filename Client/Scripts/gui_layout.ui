@@ -11,7 +11,10 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>The Best MUD</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background: rgb(157, 157, 157)</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QLineEdit" name="lineEdit">
@@ -22,6 +25,15 @@
       <width>541</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Constantia</family>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #eef, stop: 1 #ccf);</string>
     </property>
     <property name="clearButtonEnabled">
      <bool>false</bool>
@@ -36,8 +48,20 @@
       <height>511</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <family>Constantia</family>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #eef, stop: 1 #ccf);</string>
+    </property>
     <property name="readOnly">
      <bool>true</bool>
+    </property>
+    <property name="backgroundVisible">
+     <bool>false</bool>
     </property>
    </widget>
   </widget>

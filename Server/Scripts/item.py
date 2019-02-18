@@ -14,6 +14,7 @@ class Item:
 
 class Weapon(Item):
 
+    two_handed = ''
     damage = ''
 
     def __init__(self, name, weight, max_durability, damage):

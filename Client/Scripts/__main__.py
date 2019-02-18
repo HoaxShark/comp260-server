@@ -8,6 +8,7 @@ import sys
 import threading
 import socket
 
+
 class Client:
 
     def __init__(self):
@@ -23,11 +24,10 @@ class Client:
             if self.is_connected:
                 try:
                     self.my_window.messageQueue.put(self.my_socket.recv(4096).decode("utf-8"))
-                    print("Adding to queue")
                 except socket.error:
                     self.my_socket = None
                     self.is_connected = False
-                    print("Server lost.")
+                    self.my_window.plainTextEdit.appendPlainText("Server lost.")
                     sleep(2)
 
     def connection_thread(self, input_manager):
@@ -44,12 +44,12 @@ class Client:
                     self.is_connected = True
                     # update the socket in the input_manager
                     self.input_manager.my_socket = self.my_socket
-                    print("Connected to Server.")
+                    self.my_window.plainTextEdit.appendPlainText("Connected to server.")
                     sleep(2)
 
                 except socket.error:
                     self.is_connected = False
-                    print("no luck connecting, try again in 2 secs")
+                    self.my_window.plainTextEdit.appendPlainText("Connection attempt failed. Trying again.")
                     sleep(2)
 
     # Entry point of programme
@@ -71,7 +71,6 @@ class Client:
             # exit the gui window
             sys.exit(self.app.exec_())
 
-        print('Exiting Dungeon')
         self.my_socket.close()
 
 

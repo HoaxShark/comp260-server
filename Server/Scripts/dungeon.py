@@ -1,4 +1,5 @@
 from Scripts import timer
+from Scripts import item
 
 
 class Room:

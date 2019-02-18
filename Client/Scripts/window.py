@@ -1,4 +1,3 @@
-import socket
 from PyQt5 import QtWidgets, uic, QtCore
 from PyQt5.QtCore import Qt
 from queue import *

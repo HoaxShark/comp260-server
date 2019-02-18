@@ -5,16 +5,31 @@ class Input:
         self.current_input: str = ''  # latest input from the client
         self.all_connected_clients = ''  # dictionary of all current clients
 
+'''
+    def check_room_for_players(self, my_player):
+        for other_client in self.all_connected_clients:
+            other_player = self.all_connected_clients.get(other_client)
+            if my_player.current_room == other_player.current_room:
+                players_in_room += other_player
+            return players_in_room
+                
+    def say_goodbye(self, my_player):
+        players_in_room = self.check_room_for_players(self, my_player)
+        for client in players_in_room:
+            client.send(message_to_say.encode())
+     '''
+
     # shows a full list of possible commands in the game
     def print_help(self):
         return 'Possible commands: \n north - travel north \n east - travel east \n south - travel south' \
-               '\n west - travel west \n look - look around current location \n exit - exit the game'
+               '\n west - travel west \n look - look around current location \n exit - exit the game \n' \
+               ' say <text> - talk to everyone in your room'
 
     # manages all input from clients
-    def player_input(self, current_input, player, dungeon):
+    def player_input(self, current_input, client, dungeon):
         self.current_input = current_input  # Get input from player
         my_dungeon = dungeon
-        my_player = player
+        my_player = self.all_connected_clients.get(client)
         # split the player input string
         split_input = current_input.split(' ', 1)
         # stores the first word of the input string (use this across the board)

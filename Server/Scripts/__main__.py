@@ -40,7 +40,8 @@ def accept_clients(server_socket):
         # lock the clients dictionary
         clientsLock.acquire()
         # store the enw client in the dictionary
-        clients[new_client[0]] = 0
+        clients[new_client[0]] = player.Player(my_dungeon, 'Hall')
+        print(clients.get(new_client[0]))
         # create a receive message thread for the client
         my_receive_thread = threading.Thread(target=receive_thread, args=(new_client[0],))
         my_receive_thread.start()
@@ -65,7 +66,7 @@ if __name__ == '__main__':
 
     # generate dungeon
     my_dungeon = dungeon.Dungeon()
-    my_player = player.Player(my_dungeon, 'Hall')
+    #my_player = player.Player(my_dungeon, 'Hall')
     input_manager = input.Input()
 
     # start the thread that accepts new clients
@@ -83,7 +84,7 @@ if __name__ == '__main__':
                 # print received data
                 # print("Input from client " + str(client_and_message[0]) + ": \n" + client_and_message[1])
                 # send input from client to the input manager
-                client_reply = input_manager.player_input(client_and_message[1], my_player, my_dungeon)
+                client_reply = input_manager.player_input(client_and_message[1], client_and_message[0], my_dungeon)
                 if client_reply != None:
                     # send back the data received
                     client_and_message[0].send(client_reply.encode())
