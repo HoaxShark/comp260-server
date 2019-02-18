@@ -8,3 +8,4 @@ class Player:
         self.max_weight: int  # Maximum weight the player can reach before being unable to move
         self.inventory = {}  # Items the player has on them
         self.equipped = {}  # Items the player had equipped
+        self.player_name = 'Ryan'  # name of player

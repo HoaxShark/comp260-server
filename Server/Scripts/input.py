@@ -3,6 +3,7 @@ class Input:
         self.number_incorrect_inputs: int = 0  # track consecutive incorrect inputs
         self.lowered_input: str = ''  # lowercase version of what was input
         self.current_input: str = ''  # latest input from the client
+        self.all_connected_clients = ''  # dictionary of all current clients
 
     # shows a full list of possible commands in the game
     def print_help(self):
@@ -14,10 +15,26 @@ class Input:
         self.current_input = current_input  # Get input from player
         my_dungeon = dungeon
         my_player = player
+        # split the player input string
+        split_input = current_input.split(' ', 1)
+        # stores the first word of the input string (use this across the board)
+        first_word = split_input[0]
 
         #  Exit game if exit is entered
         if self.current_input == 'exit':
             # disconnect from server here
+            return
+
+        # if trying to talk send message to all other clients in the room
+        elif first_word == 'say':
+            # pop the first word out of the list
+            split_input.pop(0)
+            # reform the list into a string
+            message_to_say = my_player.player_name + ': '
+            message_to_say += ''.join(split_input)
+            # send message to all clients
+            for client in self.all_connected_clients:
+                client.send(message_to_say.encode())
             return
 
         elif self.current_input == 'look':

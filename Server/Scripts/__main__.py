@@ -44,6 +44,8 @@ def accept_clients(server_socket):
         # create a receive message thread for the client
         my_receive_thread = threading.Thread(target=receive_thread, args=(new_client[0],))
         my_receive_thread.start()
+        # update the client list in input_manager
+        input_manager.all_connected_clients = clients
         # release the lock on the dictionary
         clientsLock.release()
         # is_connected = True
@@ -82,8 +84,9 @@ if __name__ == '__main__':
                 # print("Input from client " + str(client_and_message[0]) + ": \n" + client_and_message[1])
                 # send input from client to the input manager
                 client_reply = input_manager.player_input(client_and_message[1], my_player, my_dungeon)
-                # send back the data received
-                client_and_message[0].send(client_reply.encode())
+                if client_reply != None:
+                    # send back the data received
+                    client_and_message[0].send(client_reply.encode())
 
             except socket.error:
                 # add the lost client to the list of lost clients
@@ -93,6 +96,8 @@ if __name__ == '__main__':
         for client in lost_clients:
             # pop the lost client from the dictionary of clients
             clients.pop(client)
+            # update the client list in input_manager
+            input_manager.all_connected_clients = clients
 
         clientsLock.release()
 
