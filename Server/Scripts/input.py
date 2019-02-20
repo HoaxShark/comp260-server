@@ -5,6 +5,7 @@ class Input:
         self.current_input: str = ''  # latest input from the client
         self.all_connected_clients = ''  # dictionary of all current clients
         self.current_client = ''  # the client input is currently being managed for
+        # self.players_in_room_names = ''  # the player names of people in the room
 
     # returns all other clients in the same room
     def check_room_for_players(self, my_player):
@@ -18,6 +19,7 @@ class Input:
                 if other_client != self.current_client:
                     # add other_client to the dict of clients in room
                     clients_in_room[other_client] = 0
+                    # self.players_in_room_names += other_player.player_name + ", "
         return clients_in_room
 
     # tells all players in room that the player has left
@@ -56,8 +58,12 @@ class Input:
             # reform the list into a string
             message_to_say = my_player.player_name + ': '
             message_to_say += ''.join(split_input)
-            # send message to all clients
-            for client in self.all_connected_clients:
+            # create and send message to input client about what they said
+            message_to_yourself = 'You say: ' + ''.join(split_input)
+            client.send(message_to_yourself.encode())
+            # send message to all clients in room
+            clients_in_room = self.check_room_for_players(my_player)
+            for client in clients_in_room:
                 client.send(message_to_say.encode())
             return
 
