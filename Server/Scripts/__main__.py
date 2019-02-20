@@ -39,7 +39,7 @@ def accept_clients(server_socket):
         print("Added client. Socket info: " + str(new_client[0]))
         # lock the clients dictionary
         clientsLock.acquire()
-        # store the enw client in the dictionary
+        # store the new client in the dictionary and apply a new player to it
         clients[new_client[0]] = player.Player(my_dungeon, 'Hall')
         print(clients.get(new_client[0]))
         # create a receive message thread for the client

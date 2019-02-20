@@ -4,20 +4,28 @@ class Input:
         self.lowered_input: str = ''  # lowercase version of what was input
         self.current_input: str = ''  # latest input from the client
         self.all_connected_clients = ''  # dictionary of all current clients
+        self.current_client = ''  # the client input is currently being managed for
 
-'''
+    # returns all other clients in the same room
     def check_room_for_players(self, my_player):
+        clients_in_room = {}  # all clients in the same room as the player
         for other_client in self.all_connected_clients:
+            # get the player attached to the client
             other_player = self.all_connected_clients.get(other_client)
+            # if client is in the same room as the player add to the list of clients
             if my_player.current_room == other_player.current_room:
-                players_in_room += other_player
-            return players_in_room
-                
-    def say_goodbye(self, my_player):
-        players_in_room = self.check_room_for_players(self, my_player)
-        for client in players_in_room:
+                # check that it isn't the current client we have found
+                if other_client != self.current_client:
+                    # add other_client to the dict of clients in room
+                    clients_in_room[other_client] = 0
+        return clients_in_room
+
+    # tells all players in room that the player has left
+    def joined_or_left_room(self, my_player, joined_or_left):
+        clients_in_room = self.check_room_for_players(my_player)
+        message_to_say = my_player.player_name + " has " + joined_or_left + " the room"
+        for client in clients_in_room:
             client.send(message_to_say.encode())
-     '''
 
     # shows a full list of possible commands in the game
     def print_help(self):
@@ -28,6 +36,7 @@ class Input:
     # manages all input from clients
     def player_input(self, current_input, client, dungeon):
         self.current_input = current_input  # Get input from player
+        self.current_client = client
         my_dungeon = dungeon
         my_player = self.all_connected_clients.get(client)
         # split the player input string
@@ -58,25 +67,33 @@ class Input:
         #  Move between rooms
         elif self.current_input == 'north':
             if my_dungeon.rooms[my_player.current_room].north_connection != '':
+                self.joined_or_left_room(my_player, 'left')
                 my_player.current_room = my_dungeon.rooms[my_player.current_room].north_connection
+                self.joined_or_left_room(my_player, 'joined')
                 return my_dungeon.rooms[my_player.current_room].description
             else:
                 return 'There is no path this way'
         elif self.current_input == 'east':
             if my_dungeon.rooms[my_player.current_room].east_connection != '':
+                self.joined_or_left_room(my_player, 'left')
                 my_player.current_room = my_dungeon.rooms[my_player.current_room].east_connection
+                self.joined_or_left_room(my_player, 'joined')
                 return my_dungeon.rooms[my_player.current_room].description
             else:
                 return 'There is no path this way'
         elif self.current_input == 'south':
             if my_dungeon.rooms[my_player.current_room].south_connection != '':
+                self.joined_or_left_room(my_player, 'left')
                 my_player.current_room = my_dungeon.rooms[my_player.current_room].south_connection
+                self.joined_or_left_room(my_player, 'joined')
                 return my_dungeon.rooms[my_player.current_room].description
             else:
                 return 'There is no path this way'
         elif self.current_input == 'west':
             if my_dungeon.rooms[my_player.current_room].west_connection != '':
+                self.joined_or_left_room(my_player, 'left')
                 my_player.current_room = my_dungeon.rooms[my_player.current_room].west_connection
+                self.joined_or_left_room(my_player, 'joined')
                 return my_dungeon.rooms[my_player.current_room].description
             else:
                 return'There is no path this way'
