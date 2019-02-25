@@ -32,8 +32,8 @@ class Input:
     # shows a full list of possible commands in the game
     def print_help(self):
         return 'Possible commands: \n north - travel north \n east - travel east \n south - travel south' \
-               '\n west - travel west \n look - look around current location \n exit - exit the game \n' \
-               ' say <text> - talk to everyone in your room'
+               '\n west - travel west \n look - look around current location \n' \
+               ' say <text> - talk to everyone in your room \n #name <new_name>'
 
     # manages all input from clients
     def player_input(self, current_input, client, dungeon):
@@ -56,10 +56,10 @@ class Input:
             # pop the first word out of the list
             split_input.pop(0)
             # reform the list into a string
-            message_to_say = my_player.player_name + ': '
-            message_to_say += ''.join(split_input)
+            message_to_say = '<font color="blue">' + my_player.player_name + ': '
+            message_to_say += ''.join(split_input) + '</font>'
             # create and send message to input client about what they said
-            message_to_yourself = 'You say: ' + ''.join(split_input)
+            message_to_yourself = '<font color="dark blue">You say: ' + ''.join(split_input) + '</font>'
             client.send(message_to_yourself.encode())
             # send message to all clients in room
             clients_in_room = self.check_room_for_players(my_player)
@@ -67,8 +67,21 @@ class Input:
                 client.send(message_to_say.encode())
             return
 
+        elif first_word == '#name':
+            # pop the first word out of the list
+            split_input.pop(0)
+            # rename player
+            my_player.player_name = ''.join(split_input)
+            return 'You are now named: ' + ''.join(split_input)
+
         elif self.current_input == 'look':
-            return my_dungeon.rooms[my_player.current_room].look_description
+            all_items = 'Items in room: '
+            for item in my_dungeon.rooms[my_player.current_room].items:
+                all_items += item.name + '\n'
+            if my_dungeon.rooms[my_player.current_room].items:
+                return my_dungeon.rooms[my_player.current_room].look_description + '\n' + all_items
+            else:
+                return my_dungeon.rooms[my_player.current_room].look_description
 
         #  Move between rooms
         elif self.current_input == 'north':

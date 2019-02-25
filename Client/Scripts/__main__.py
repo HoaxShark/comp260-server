@@ -27,14 +27,14 @@ class Client:
                 except socket.error:
                     self.my_socket = None
                     self.is_connected = False
-                    self.my_window.plainTextEdit.appendPlainText("Server lost.")
+                    self.my_window.textEdit.append("<font color='red'>Server lost.</font>")
                     sleep(2)
 
-    def connection_thread(self, input_manager):
+    def connection_thread(self):
         while self.is_running:
             # if not connected loop here trying to connect until success
-            while self.is_connected == False:
-                if self.my_socket == None:
+            while self.is_connected is False:
+                if self.my_socket is None:
                     # create a socket
                     self.my_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -44,12 +44,12 @@ class Client:
                     self.is_connected = True
                     # update the socket in the input_manager
                     self.input_manager.my_socket = self.my_socket
-                    self.my_window.plainTextEdit.appendPlainText("Connected to server.")
+                    self.my_window.textEdit.append("<font color='green'>Connected to server.<font>")
                     sleep(2)
 
                 except socket.error:
                     self.is_connected = False
-                    self.my_window.plainTextEdit.appendPlainText("Connection attempt failed. Trying again.")
+                    self.my_window.textEdit.append("<font color='red'>Connection attempt failed. Trying again.</font>")
                     sleep(2)
 
     # Entry point of programme
@@ -59,7 +59,7 @@ class Client:
         # pass input_manager to the window
         self.my_window.input_manager = self.input_manager
         # start connection thread which deals with general updates, sending to server
-        my_connection_thread = threading.Thread(target=self.connection_thread, args=(self.input_manager,))
+        my_connection_thread = threading.Thread(target=self.connection_thread)
         my_connection_thread.start()
         # start the receive thread running
         my_receive_thread = threading.Thread(target=self.receive_thread)

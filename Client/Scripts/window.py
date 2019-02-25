@@ -24,7 +24,7 @@ class Window(QtWidgets.QMainWindow):
     def timerEvent(self):
         # while messages in the queue print them to client
         while self.messageQueue.qsize() > 0:
-            self.plainTextEdit.appendPlainText(self.messageQueue.get())
+            self.textEdit.append(self.messageQueue.get())
 
     # sends entered text to the input manager if not blank, then clears the text box
     def text_enter(self):

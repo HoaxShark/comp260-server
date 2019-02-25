@@ -15,6 +15,8 @@ clientsLock = threading.Lock()
 # queue of all messages received
 message_queue = Queue()
 
+lost_clients = []
+
 
 # used as a thread. created for each connected client, receives their input and stores in a queue
 # with the client socket and the message
@@ -27,6 +29,7 @@ def receive_thread(client_socket):
             print("Adding to queue")
         except socket.error:
             print("Client lost.")
+            lost_clients.append(client_socket)
             receive_is_running = False
 
 
@@ -40,11 +43,15 @@ def accept_clients(server_socket):
         # lock the clients dictionary
         clientsLock.acquire()
         # store the new client in the dictionary and apply a new player to it
-        clients[new_client[0]] = player.Player(my_dungeon, 'Hall')
+        clients[new_client[0]] = player.Player(my_dungeon, '1')
         print(clients.get(new_client[0]))
         # create a receive message thread for the client
         my_receive_thread = threading.Thread(target=receive_thread, args=(new_client[0],))
         my_receive_thread.start()
+
+        start_message = 'You stand in the city of Elerand, before you stands the magnficent church of Phelonia, known to have trained the greatest of holy knights.\n'
+        new_client[0].send(start_message.encode())
+
         # update the client list in input_manager
         input_manager.all_connected_clients = clients
         # release the lock on the dictionary
@@ -66,7 +73,6 @@ if __name__ == '__main__':
 
     # generate dungeon
     my_dungeon = dungeon.Dungeon()
-    #my_player = player.Player(my_dungeon, 'Hall')
     input_manager = input.Input()
 
     # start the thread that accepts new clients
@@ -74,7 +80,6 @@ if __name__ == '__main__':
     my_accept_thread.start()
 
     while is_running:
-        lost_clients = []
         client_and_message = ''
 
         clientsLock.acquire()
@@ -85,7 +90,7 @@ if __name__ == '__main__':
                 # print("Input from client " + str(client_and_message[0]) + ": \n" + client_and_message[1])
                 # send input from client to the input manager
                 client_reply = input_manager.player_input(client_and_message[1], client_and_message[0], my_dungeon)
-                if client_reply != None:
+                if client_reply is not None:
                     # send back the data received
                     client_and_message[0].send(client_reply.encode())
 
@@ -99,6 +104,9 @@ if __name__ == '__main__':
             clients.pop(client)
             # update the client list in input_manager
             input_manager.all_connected_clients = clients
+
+        # clear list of lost clients
+        lost_clients = []
 
         clientsLock.release()
 
