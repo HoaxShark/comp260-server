@@ -39,7 +39,7 @@
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QPlainTextEdit" name="plainTextEdit">
+   <widget class="QTextEdit" name="textEdit">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -56,12 +56,6 @@
     </property>
     <property name="styleSheet">
      <string notr="true">background: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #eef, stop: 1 #ccf);</string>
-    </property>
-    <property name="readOnly">
-     <bool>true</bool>
-    </property>
-    <property name="backgroundVisible">
-     <bool>false</bool>
     </property>
    </widget>
   </widget>

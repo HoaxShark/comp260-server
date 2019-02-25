@@ -1,5 +1,5 @@
 ('D:\\comp260-server\\Client Build\\build\\__main__\\__main__.exe',
- True,
+ False,
  False,
  True,
  None,
@@ -37,7 +37,7 @@
  [],
  False,
  False,
- 1551095856,
- [('run.exe',
-   'D:\\comp260-server\\Client\\venv\\lib\\site-packages\\PyInstaller\\bootloader\\Windows-32bit\\run.exe',
+ 1551108618,
+ [('runw.exe',
+   'D:\\comp260-server\\Client\\venv\\lib\\site-packages\\PyInstaller\\bootloader\\Windows-32bit\\runw.exe',
    'EXECUTABLE')])
