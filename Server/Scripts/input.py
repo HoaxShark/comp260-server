@@ -33,7 +33,7 @@ class Input:
     def print_help(self):
         return 'Possible commands: \n north - travel north \n east - travel east \n south - travel south' \
                '\n west - travel west \n look - look around current location \n' \
-               ' say <text> - talk to everyone in your room \n #name <new_name>'
+               ' say <text> - talk to everyone in your room \n #name <new_name> \n pickup <item_name> \n drop <item_name> \n'
 
     # manages all input from clients
     def player_input(self, current_input, client, dungeon):
@@ -73,6 +73,42 @@ class Input:
             # rename player
             my_player.player_name = ''.join(split_input)
             return 'You are now named: ' + ''.join(split_input)
+
+        elif first_word == 'pickup':
+            # pop the first word out of the list
+            split_input.pop(0)
+            # store item name
+            item_name = ''.join(split_input)
+            # check if that item is in the room
+            for item in my_dungeon.rooms[my_player.current_room].items:
+                # if item the player is trying to pick up matches the item in a room
+                if item_name == item.name.lower():
+                    # give that item to the player
+                    my_player.inventory[item] = item.name
+                    # delete the item from the room
+                    del my_dungeon.rooms[my_player.current_room].items[item]
+                    # inform the player they got the item
+                    return 'You have picked up ' + item_name
+            # no matching item was found
+            return 'No such item here.'
+
+        elif first_word == 'drop':
+            # pop the first word out of the list
+            split_input.pop(0)
+            # store item name
+            item_name = ''.join(split_input)
+            # check if that item is in the room
+            for item in my_player.inventory:
+                # if item the player is trying to pick up matches the item in a room
+                if item_name == item.name.lower():
+                    # give that item to the room
+                    my_dungeon.rooms[my_player.current_room].items[item] = item.name
+                    # delete the item from the player
+                    del my_player.inventory[item]
+                    # inform the player they got the item
+                    return 'You have dropped ' + item_name
+            # no matching item was found
+            return 'No such item in your inventory.'
 
         elif self.current_input == 'look':
             all_items = 'Items in room: '
