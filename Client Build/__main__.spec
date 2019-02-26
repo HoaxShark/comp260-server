@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['D:/comp260-server/Client/Scripts/__main__.py'],
-             pathex=['D:\\comp260-server\\Client Build'],
+             pathex=['D:\\comp260-server\\Client Build Test'],
              binaries=[],
              datas=[],
              hiddenimports=[],
@@ -26,7 +26,7 @@ exe = EXE(pyz,
           bootloader_ignore_signals=False,
           strip=False,
           upx=True,
-          console=False )
+          console=True )
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,

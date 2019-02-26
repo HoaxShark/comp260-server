@@ -16,6 +16,7 @@ class Window(QtWidgets.QMainWindow):
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.timerEvent)
         self.timer.start(100)
+        self.client = ''
 
     def window_draw(self):
         self.ui.show()
@@ -36,3 +37,19 @@ class Window(QtWidgets.QMainWindow):
         key = event.key()
         if key == Qt.Key_Return:
             self.text_enter()
+
+    # runs when the pyqt window is closed, shuts down the client and ends current threads
+    def closeEvent(self, event):
+        self.client.is_running = False
+        self.client.is_connected = False
+
+        self.client.my_socket.close()
+        self.client.my_socket = None
+
+        if self.client.my_receive_thread is not None:
+            self.client.my_receive_thread.join
+        if self.client.my_connection_thread is not None:
+            self.client.my_connection_thread.join
+
+    def set_client(self, game_client):
+        self.client = game_client

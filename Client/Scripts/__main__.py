@@ -18,6 +18,13 @@ class Client:
         self.app = QApplication(sys.argv)
         self.my_window = window.Window()
         self.input_manager = ''
+        self.client = ''
+        self.my_connection_thread = ''
+        self.my_receive_thread = ''
+
+    def set_client(self, this_client):
+        self.client = this_client
+        self.my_window.set_client(self.client)
 
     def receive_thread(self):
         while self.is_running:
@@ -59,23 +66,21 @@ class Client:
         # pass input_manager to the window
         self.my_window.input_manager = self.input_manager
         # start connection thread which deals with general updates, sending to server
-        my_connection_thread = threading.Thread(target=self.connection_thread)
-        my_connection_thread.start()
+        self.my_connection_thread = threading.Thread(target=self.connection_thread)
+        self.my_connection_thread.start()
         # start the receive thread running
-        my_receive_thread = threading.Thread(target=self.receive_thread)
-        my_receive_thread.start()
+        self.my_receive_thread = threading.Thread(target=self.receive_thread)
+        self.my_receive_thread.start()
 
-        while self.is_running:
-            # draw the gui window
-            self.my_window.window_draw()
-            # exit the gui window
-            sys.exit(self.app.exec_())
-
-        self.my_socket.close()
+        # draw the gui window
+        self.my_window.window_draw()
+        # exit the gui window
+        sys.exit(self.app.exec_())
 
 
 # If this is __main__ then run entry point
 if __name__ == '__main__':
     client = Client()
+    client.set_client(client)
     client.main()
 
