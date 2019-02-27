@@ -41,7 +41,7 @@ class Dungeon:
                                  'You recognise the statues of deities, Azur and Benath two of the holy knights of legend.\n',
                                  south='1',
                                  north='101',
-                                 items={item.Weapon("Sword of Benath", 10, 100, 5):'Sword of Benath', item.Weapon("Candle", 10, 100, 20):'Candle' })
+                                 items={item.Weapon("Sword of Benath", 10, 100, 5, "right_hand"):'Sword of Benath', item.Weapon("Candle", 10, 100, 20, "right_hand"):'Candle' })
         self.rooms['101'] = Room('101', 'Church Center',
                                  'You stand in the center of the church, enterances to both wings sit on the east and west, to the north lies the main alter and south is the enterance hall.\n',
                                  'On deeper inspection you see that the two wings have been locked down and the altar is being blocked by a hudle people.\n',

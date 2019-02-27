@@ -1,10 +1,5 @@
 class Item:
 
-    name = ''
-    weight = ''
-    durability = ''
-    max_durability = ''
-
     def __init__(self, name, weight, max_durability):
         self.name = name
         self.weight = weight
@@ -14,18 +9,13 @@ class Item:
 
 class Weapon(Item):
 
-    two_handed = ''
-    damage = ''
-
-    def __init__(self, name, weight, max_durability, damage):
+    def __init__(self, name, weight, max_durability, damage, body_part):
         super().__init__(name, weight, max_durability)
         self.damage = damage
+        self.body_part = body_part
 
 
 class Armour(Item):
-
-    defence = ''
-    body_part = ''
 
     def __init__(self, name, weight, max_durability, defence, body_part):
         super().__init__(name, weight, max_durability)
