@@ -39,15 +39,17 @@ class Input:
     def player_input(self, current_input, client, dungeon):
         self.current_input = current_input  # Get input from player
         self.current_client = client
+        self.lowered_input = current_input.lower()  # Transform to lowercase
+
         my_dungeon = dungeon
         my_player = self.all_connected_clients.get(client)
         # split the player input string
         split_input = current_input.split(' ', 1)
         # stores the first word of the input string (use this across the board)
-        first_word = split_input[0]
+        first_word = split_input[0].lower()
 
         #  Exit game if exit is entered
-        if self.current_input == 'exit':
+        if self.lowered_input == 'exit':
             # disconnect from server here
             return
 
@@ -70,9 +72,13 @@ class Input:
         elif first_word == '#name':
             # pop the first word out of the list
             split_input.pop(0)
-            # rename player
-            my_player.player_name = ''.join(split_input)
-            return 'You are now named: ' + ''.join(split_input)
+            # check that the user entered a name
+            if split_input[0] is not '':
+                # rename player
+                my_player.player_name = ''.join(split_input)
+                return 'You are now named: ' + ''.join(split_input)
+            else:
+                return 'You must enter a name.'
 
         elif first_word == 'pickup':
             # pop the first word out of the list
@@ -110,7 +116,7 @@ class Input:
             # no matching item was found
             return 'No such item in your inventory.'
 
-        elif self.current_input == 'look':
+        elif self.lowered_input == 'look':
             all_items = 'Items in room: '
             for item in my_dungeon.rooms[my_player.current_room].items:
                 all_items += item.name + '\n'
@@ -120,7 +126,7 @@ class Input:
                 return my_dungeon.rooms[my_player.current_room].look_description
 
         #  Move between rooms
-        elif self.current_input == 'north':
+        elif self.lowered_input == 'north':
             if my_dungeon.rooms[my_player.current_room].north_connection != '':
                 self.joined_or_left_room(my_player, 'left')
                 my_player.current_room = my_dungeon.rooms[my_player.current_room].north_connection
@@ -128,7 +134,7 @@ class Input:
                 return my_dungeon.rooms[my_player.current_room].description
             else:
                 return 'There is no path this way'
-        elif self.current_input == 'east':
+        elif self.lowered_input == 'east':
             if my_dungeon.rooms[my_player.current_room].east_connection != '':
                 self.joined_or_left_room(my_player, 'left')
                 my_player.current_room = my_dungeon.rooms[my_player.current_room].east_connection
@@ -136,7 +142,7 @@ class Input:
                 return my_dungeon.rooms[my_player.current_room].description
             else:
                 return 'There is no path this way'
-        elif self.current_input == 'south':
+        elif self.lowered_input == 'south':
             if my_dungeon.rooms[my_player.current_room].south_connection != '':
                 self.joined_or_left_room(my_player, 'left')
                 my_player.current_room = my_dungeon.rooms[my_player.current_room].south_connection
@@ -144,7 +150,7 @@ class Input:
                 return my_dungeon.rooms[my_player.current_room].description
             else:
                 return 'There is no path this way'
-        elif self.current_input == 'west':
+        elif self.lowered_input == 'west':
             if my_dungeon.rooms[my_player.current_room].west_connection != '':
                 self.joined_or_left_room(my_player, 'left')
                 my_player.current_room = my_dungeon.rooms[my_player.current_room].west_connection
@@ -154,19 +160,9 @@ class Input:
                 return'There is no path this way'
 
         #  Print list of commands
-        elif self.current_input == 'help':
+        elif self.lowered_input == 'help':
             return self.print_help()
 
         else:
             #  if incorrect input tell user
-            if self.number_incorrect_inputs <= 5:
-                self.number_incorrect_inputs += 1
-                return 'No such command - type "help" for a list of commands'
-
-            #  if incorrect too many times in a row print the possible commands
-            else:
-                help_text = 'Ok dont worry, I will do it for you :) \n'
-                help_text += self.print_help()
-                return help_text
-
-        self.number_incorrect_inputs = 0  # if a correct input is entered reset counter
+            return 'No such command - type "help" for a list of commands'
