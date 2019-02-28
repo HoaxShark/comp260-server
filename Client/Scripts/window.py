@@ -11,7 +11,7 @@ class Window(QtWidgets.QMainWindow):
         self.ui = uic.loadUi('gui_layout.ui', self)
         self.input_manager = ''
         # queue that holds all messages from the server
-        self.messageQueue = Queue()
+        self.message_queue = Queue()
 
         # setup for the timer event function
         self.timer = QtCore.QTimer()
@@ -25,8 +25,8 @@ class Window(QtWidgets.QMainWindow):
     # runs during alongside the window, use as an update function
     def timerEvent(self):
         # while messages in the queue print them to client
-        while self.messageQueue.qsize() > 0:
-            self.textEdit.append(self.messageQueue.get())
+        while self.message_queue.qsize() > 0:
+            self.textEdit.append(self.message_queue.get())
 
     # sends entered text to the input manager if not blank, then clears the text box
     def text_enter(self):
@@ -52,5 +52,5 @@ class Window(QtWidgets.QMainWindow):
         if self.client.my_connection_thread is not None:
             self.client.my_connection_thread.join
 
-    def set_client(self, game_client):
-        self.client = game_client
+    def set_client(self, this_client):
+        self.client = this_client
