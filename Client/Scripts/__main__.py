@@ -51,7 +51,7 @@ class Client:
                     self.is_connected = True
                     # update the socket in the input_manager
                     self.input_manager.my_socket = self.my_socket
-                    self.my_window.textEdit.append("<font color='green'>Connected to server.<font>")
+                    self.my_window.textEdit.append("<font color='green'>Connected to server.</font>")
                     sleep(2)
 
                 except socket.error:

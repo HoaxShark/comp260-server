@@ -74,11 +74,14 @@ class Input:
         elif first_word == 'name':
             # pop the first word out of the list
             split_input.pop(0)
-            # check that the user entered a name
-            if split_input[0] is not '':
-                # rename player
-                my_player.player_name = ''.join(split_input)
-                return 'You are now named: ' + ''.join(split_input)
+            if split_input:
+                # check that the user entered a name
+                if split_input[0] is not '':
+                    # rename player
+                    my_player.player_name = ''.join(split_input)
+                    return 'You are now named: ' + ''.join(split_input)
+                else:
+                    return 'You must enter a name.'
             else:
                 return 'You must enter a name.'
 

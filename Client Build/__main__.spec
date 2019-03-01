@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['D:/comp260-server/Client/Scripts/__main__.py'],
-             pathex=['D:\\comp260-server\\Client Build Test'],
+             pathex=['D:\\comp260-server\\Client Build'],
              binaries=[],
              datas=[],
              hiddenimports=[],
