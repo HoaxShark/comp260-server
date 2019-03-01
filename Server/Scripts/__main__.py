@@ -52,8 +52,8 @@ def accept_clients(server_socket):
         start_message = 'You stand in the city of Elerand, before you stands the magnficent church of Phelonia, known to have trained the greatest of holy knights.\n'
         new_client[0].send(start_message.encode())
 
-        # update the client list in input_manager
-        input_manager.all_connected_clients = clients
+        # copy the client list into the input_manager
+        input_manager.all_connected_clients = dict(clients)
         # release the lock on the dictionary
         clientsLock.release()
         # is_connected = True

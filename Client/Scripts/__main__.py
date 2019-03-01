@@ -30,7 +30,7 @@ class Client:
         while self.is_running:
             if self.is_connected:
                 try:
-                    self.my_window.messageQueue.put(self.my_socket.recv(4096).decode("utf-8"))
+                    self.my_window.message_queue.put(self.my_socket.recv(4096).decode("utf-8"))
                 except socket.error:
                     self.my_socket = None
                     self.is_connected = False

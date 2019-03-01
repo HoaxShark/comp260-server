@@ -45,4 +45,8 @@ class Dungeon:
         self.rooms['101'] = Room('101', 'Church Center',
                                  'You stand in the center of the church, enterances to both wings sit on the east and west, to the north lies the main alter and south is the enterance hall.\n',
                                  'On deeper inspection you see that the two wings have been locked down and the altar is being blocked by a hudle people.\n',
-                                 south='100')
+                                 south='100',
+                                 items={item.Armour("Chestplate", 50, 100, 20, "chest"):'Chestplate',
+                                        item.Armour("Hat", 5, 100, 2, "head"):'Hat',item.Armour("Gloves", 4, 100, 2, "hands"):'Gloves',
+                                        item.Armour("Gauntlets", 30, 100, 10, "hands"):'Gauntlets',item.Armour("Trousers", 15, 100, 7, "legs"):'Trousers',
+                                        item.Armour("Boots", 10, 100, 5, "feet"):'Boots'})

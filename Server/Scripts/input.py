@@ -160,7 +160,15 @@ class Input:
                 self.joined_or_left_room(my_player, 'left')
                 my_player.current_room = my_dungeon.rooms[my_player.current_room].north_connection
                 self.joined_or_left_room(my_player, 'joined')
-                return my_dungeon.rooms[my_player.current_room].description
+                clients_in_room = self.check_room_for_players(my_player)
+                reply_to_player = my_dungeon.rooms[my_player.current_room].description
+                if clients_in_room:
+                    reply_to_player += "You see - "
+                    for client in clients_in_room:
+                        reply_to_player += self.all_connected_clients[client].player_name + " - "
+                    reply_to_player += "in the room already.\n"
+
+                return reply_to_player
             else:
                 return 'There is no path this way'
         elif self.lowered_input == 'east':
@@ -168,7 +176,15 @@ class Input:
                 self.joined_or_left_room(my_player, 'left')
                 my_player.current_room = my_dungeon.rooms[my_player.current_room].east_connection
                 self.joined_or_left_room(my_player, 'joined')
-                return my_dungeon.rooms[my_player.current_room].description
+                clients_in_room = self.check_room_for_players(my_player)
+                reply_to_player = my_dungeon.rooms[my_player.current_room].description
+                if clients_in_room:
+                    reply_to_player += "You see - "
+                    for client in clients_in_room:
+                        reply_to_player += self.all_connected_clients[client].player_name + " - "
+                    reply_to_player += "in the room already.\n"
+
+                return reply_to_player
             else:
                 return 'There is no path this way'
         elif self.lowered_input == 'south':
@@ -176,7 +192,15 @@ class Input:
                 self.joined_or_left_room(my_player, 'left')
                 my_player.current_room = my_dungeon.rooms[my_player.current_room].south_connection
                 self.joined_or_left_room(my_player, 'joined')
-                return my_dungeon.rooms[my_player.current_room].description
+                clients_in_room = self.check_room_for_players(my_player)
+                reply_to_player = my_dungeon.rooms[my_player.current_room].description
+                if clients_in_room:
+                    reply_to_player += "You see - "
+                    for client in clients_in_room:
+                        reply_to_player += self.all_connected_clients[client].player_name + " - "
+                    reply_to_player += "in the room already.\n"
+
+                return reply_to_player
             else:
                 return 'There is no path this way'
         elif self.lowered_input == 'west':
@@ -184,7 +208,15 @@ class Input:
                 self.joined_or_left_room(my_player, 'left')
                 my_player.current_room = my_dungeon.rooms[my_player.current_room].west_connection
                 self.joined_or_left_room(my_player, 'joined')
-                return my_dungeon.rooms[my_player.current_room].description
+                clients_in_room = self.check_room_for_players(my_player)
+                reply_to_player = my_dungeon.rooms[my_player.current_room].description
+                if clients_in_room:
+                    reply_to_player += "You see - "
+                    for client in clients_in_room:
+                        reply_to_player += self.all_connected_clients[client].player_name + " - "
+                    reply_to_player += "in the room already.\n"
+
+                return reply_to_player
             else:
                 return'There is no path this way'
 
