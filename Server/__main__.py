@@ -22,8 +22,7 @@ lost_clients = []
 local_host = True
 
 db = database.Database()
-db.add_player('barry', 'jack')
-print(db.get_value('players', 'player_name', 'owner_username', 'barry'))
+
 
 # used as a thread. created for each connected client, receives their input and stores in a queue
 # with the client socket and the message
@@ -97,8 +96,6 @@ if __name__ == '__main__':
         while message_queue.qsize() > 0:
             try:
                 client_and_message = message_queue.get()
-                # print received data
-                # print("Input from client " + str(client_and_message[0]) + ": \n" + client_and_message[1])
                 # send input from client to the input manager
                 client_reply = input_manager.player_input(client_and_message[1], client_and_message[0], my_dungeon)
                 if client_reply is not None:

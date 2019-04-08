@@ -31,23 +31,26 @@ class Database:
 
     # Returns the value of the requested field in a table
     def get_value(self, table_name, field_to_check, query_field, query_value):
-        self.cursor.execute('''SELECT ? FROM {} WHERE ? = ?'''.format(table_name), (field_to_check, query_field, query_value,))
+        self.cursor.execute('SELECT ' + field_to_check + ' FROM ' + table_name + ' WHERE ' + query_field + ' = ?',
+                            (query_value,))
         result = self.cursor.fetchone()  # retrieve the first row
-        return result
+        return result[0]
 
     # Checks the db for a matching value returns 0 if it doesn't match and 1 if it does
     def check_value(self, table_name, field_to_check, value_to_check, query_field, query_value):
-        self.cursor.execute('''SELECT ? FROM ? WHERE ? = ?''', (field_to_check, table_name, query_field, query_value,))
+        self.cursor.execute('SELECT ' + field_to_check + ' FROM ' + table_name + ' WHERE ' + query_field + ' = ?',
+                            (query_value,))
         result = self.cursor.fetchone()  # retrieve the first row
-        if result == value_to_check:
+        if result[0] == value_to_check:
             return 1
-        elif result != value_to_check:
+        elif result[0] != value_to_check:
             return 0
 
     # Update a value
     def change_value(self, table_name, field_to_change, new_value, query_field, query_value):
         # Insert user
-        self.cursor.execute('''UPDATE ? SET ? = ? WHERE ? = ? ''', (table_name, field_to_change, new_value, query_field, query_value,))
+        self.cursor.execute('UPDATE ' + table_name + ' SET ' + field_to_change + ' = ? WHERE ' + query_field + ' = ?',
+                            (new_value, query_value,))
         self.db.commit()
         print(field_to_change + ' updated')
 
@@ -55,8 +58,7 @@ class Database:
     def create_user_table(self):
         self.cursor.execute('''
                         CREATE TABLE IF NOT EXISTS users(
-                        id INTEGER PRIMARY KEY, 
-                        username TEXT, 
+                        username TEXT PRIMARY KEY, 
                         password TEXT, 
                         salt TEXT)
                         ''')
@@ -81,8 +83,7 @@ class Database:
     def create_dungeon_table(self):
         self.cursor.execute('''
                         CREATE TABLE IF NOT EXISTS dungeon(
-                        id INTEGER PRIMARY KEY, 
-                        room_id INTEGER, 
+                        room_id INTEGER PRIMARY KEY, 
                         base_description TEXT, 
                         detailed_description TEXT, 
                         north INTEGER DEFAULT '', 
