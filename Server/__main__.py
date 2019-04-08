@@ -6,6 +6,8 @@ from queue import *
 from Scripts import input
 from Scripts import player
 from Scripts import dungeon
+from Scripts import database
+
 
 # dictionary of all connected clients
 clients = {}
@@ -17,7 +19,11 @@ message_queue = Queue()
 
 lost_clients = []
 
-local_host = False
+local_host = True
+
+db = database.Database()
+db.add_player('barry', 'jack')
+print(db.get_value('players', 'player_name', 'owner_username', 'barry'))
 
 # used as a thread. created for each connected client, receives their input and stores in a queue
 # with the client socket and the message
