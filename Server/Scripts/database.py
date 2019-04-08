@@ -15,7 +15,7 @@ class Database:
                         ''')
         # commit the change
         self.db.commit()
-        print('Table created')
+        print('User table created')
 
     # Adds a new user to the db
     def add_user(self, name, password, salt):
@@ -55,3 +55,18 @@ class Database:
         self.cursor.execute('''UPDATE users SET password =? WHERE name = ? ''', (password, name))
         self.db.commit()
         print('Password updated')
+
+    # Create table to store all players
+    def create_player_table(self):
+        self.cursor.execute('''
+                        CREATE TABLE IF NOT EXISTS players(id INTEGER PRIMARY KEY, current_room TEXT, max_weight TEXT, inventory TEXT, equipped TEXT, player_name TEXT)
+                        ''')
+        # commit the change
+        self.db.commit()
+        print('Player table created')
+
+    # CARRY ON WITH THIS
+    def get_player_data(self, name):
+        self.cursor.execute('''SELECT * FROM players WHERE player_name=?''', (name,))
+        salt = self.cursor.fetchone()  # retrieve the first row
+        return salt

@@ -1,0 +1,22 @@
+Player table
+User table
+Dungeon table
+
+on server start read from the dungeon table
+
+Password/Username log in for users connected to user table
+
+On lo gin select player and read data from player table
+
+salt passwords
+
+encrypt/decrypt all sent data (Use AES required, fernet or crptodome, use both?)
+
+Get server on the OC server
+
+packet indexing for sending between client and server
+<ID><LENGTH><DATA>
+Split these up? Pad with random data at points?
+
+encryption keys need to be sent first and encrypted, how best to do this?
+
