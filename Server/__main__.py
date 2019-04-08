@@ -17,6 +17,7 @@ message_queue = Queue()
 
 lost_clients = []
 
+local_host = False
 
 # used as a thread. created for each connected client, receives their input and stores in a queue
 # with the client socket and the message
@@ -66,8 +67,12 @@ if __name__ == '__main__':
 
     # create the socket
     my_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    # setup the socket ip address
-    my_socket.bind(("127.0.0.1", 8222))
+    if local_host:
+        # setup the socket ip address for local testing
+        my_socket.bind(("127.0.0.1", 8222))
+    else:
+        # setup the socket ip address for server testing
+        my_socket.bind(("46.101.56.200", 9199))
     # listen for new connections / waits here until a client connects
     my_socket.listen(5)
 

@@ -1,8 +1,7 @@
 class Input:
     def __init__(self):
-        self.number_incorrect_inputs: int = 0  # track consecutive incorrect inputs
-        self.lowered_input: str = ''  # lowercase version of what was input
-        self.current_input: str = ''  # latest input from the client
+        self.lowered_input = ''  # lowercase version of what was input
+        self.current_input = ''  # latest input from the client
         self.all_connected_clients = ''  # dictionary of all current clients
         self.current_client = ''  # the client input is currently being managed for
         # self.players_in_room_names = ''  # the player names of people in the room

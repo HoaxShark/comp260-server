@@ -1,0 +1,8 @@
+host is: sftp://46.101.56.200
+
+Username: ryan
+Password: uni password
+
+Connect via PuTTY
+Connect filezilla to edit files
+https://filezilla-project.org/ 

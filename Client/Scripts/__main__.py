@@ -8,6 +8,8 @@ import sys
 import threading
 import socket
 
+local_host = False
+
 
 class Client:
 
@@ -46,8 +48,12 @@ class Client:
                     self.my_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
                 try:
-                    # connect to the IP address using port
-                    self.my_socket.connect(("127.0.0.1", 8222))
+                    if local_host:
+                        # connect to the IP address using port for local hosting
+                        self.my_socket.connect(("127.0.0.1", 8222))
+                    else:
+                        # connect to the IP address using port for server hosting
+                        self.my_socket.connect(("46.101.56.200", 9199))
                     self.is_connected = True
                     # update the socket in the input_manager
                     self.input_manager.my_socket = self.my_socket

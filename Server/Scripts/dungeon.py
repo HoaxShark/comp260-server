@@ -18,13 +18,12 @@ class Room:
 
 class Dungeon:
 
-    rooms: Room = {}
-    time: int
-
     def __init__(self):
+        self.rooms = {}
         self.populate_dungeon()
         self.timer_ref = timer.Timer()
         self.players = {}  # dictionary of all players in the dungeon
+        self.time = 0
 
     def update_dungeon(self):
         self.timer_ref.update_time()
