@@ -17,6 +17,11 @@ class Window(QtWidgets.QMainWindow):
         self.timer.timeout.connect(self.timerEvent)
         self.timer.start(100)
         self.client = ''
+        self.salt = ''
+        self.logged_in = False
+
+    def set_logged_in(self, logged_in):
+        self.logged_in = logged_in
 
     def window_draw(self):
         self.ui.show()
@@ -25,7 +30,19 @@ class Window(QtWidgets.QMainWindow):
     def timerEvent(self):
         # while messages in the queue print them to client
         while self.message_queue.qsize() > 0:
-            self.textEdit.append(self.message_queue.get())
+            current_input = self.message_queue.get()  # Get messege out the queue
+            # split the player input string
+            split_input = current_input.split(' ', 1)
+            # stores the first word of the input string (use this across the board)
+            first_word = split_input[0].lower()
+
+            if first_word == 'username_salt':
+                self.salt = split_input[1]
+                self.input_manager.set_salt(self.salt)
+            elif first_word == 'login_accepted':
+                self.logged_in = True
+            else:
+                self.textEdit.append(current_input)
 
     # sends entered text to the input manager if not blank, then clears the text box
     def text_enter(self):

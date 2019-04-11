@@ -49,20 +49,19 @@ def accept_clients(server_socket):
         # lock the clients dictionary
         clientsLock.acquire()
         # store the new client in the dictionary and apply a new player to it
-        clients[new_client[0]] = player.Player(my_dungeon, '1')
+        clients[new_client[0]] = 0  # player.Player(my_dungeon, '1')
         print(clients.get(new_client[0]))
         # create a receive message thread for the client
         my_receive_thread = threading.Thread(target=receive_thread, args=(new_client[0],))
         my_receive_thread.start()
 
-        start_message = 'You stand in the city of Elerand, before you stands the magnficent church of Phelonia, known to have trained the greatest of holy knights.\n'
-        new_client[0].send(start_message.encode())
+        #start_message = 'You stand in the city of Elerand, before you stands the magnficent church of Phelonia, known to have trained the greatest of holy knights.\n'
+        #new_client[0].send(start_message.encode())
 
         # copy the client list into the input_manager
         input_manager.all_connected_clients = dict(clients)
         # release the lock on the dictionary
         clientsLock.release()
-        # is_connected = True
 
 
 if __name__ == '__main__':

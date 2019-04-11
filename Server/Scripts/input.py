@@ -1,10 +1,12 @@
+from Scripts import database
+
 class Input:
     def __init__(self):
         self.lowered_input = ''  # lowercase version of what was input
         self.current_input = ''  # latest input from the client
         self.all_connected_clients = ''  # dictionary of all current clients
         self.current_client = ''  # the client input is currently being managed for
-        # self.players_in_room_names = ''  # the player names of people in the room
+        self.db = database.Database()  # database reference
 
     # returns all other clients in the same room
     def check_room_for_players(self, my_player):
@@ -18,7 +20,6 @@ class Input:
                 if other_client != self.current_client:
                     # add other_client to the dict of clients in room
                     clients_in_room[other_client] = 0
-                    # self.players_in_room_names += other_player.player_name + ", "
         return clients_in_room
 
     # tells all players in room that the player has left
@@ -53,6 +54,58 @@ class Input:
         if self.lowered_input == 'exit':
             # disconnect from server here
             return
+
+        # if receiving username_login. username_login, username, password
+        elif first_word == 'username':
+            # pop the first word out of the list
+            split_input.pop(0)
+            # check the username exists
+            exists = self.db.check_value('users', 'username', split_input[0], 'username', split_input[0])
+            if exists:
+                salt = 'username_salt '
+                salt += self.db.get_value('users', 'salt', 'username', split_input[0])
+                # Assign the username to the client
+                self.all_connected_clients[client] = split_input[0]
+                client.send(salt.encode())
+            else:
+                message = 'Username does not exist'
+                client.send(message.encode())
+
+        # Check password for user
+        elif first_word == 'username_salt':
+            # pop the first word out of the list
+            split_input.pop(0)
+            # check the password is correct
+            password_correct = self.db.check_value('users', 'password', split_input[0], 'username', my_player)
+            if password_correct:
+                login_accepted = 'login_accepted'
+                client.send(login_accepted.encode())
+                message = 'You have logged in.\n'
+                client.send(message.encode())
+                players = self.db.get_all_values('players', 'player_name', 'owner_username', my_player)
+                message = 'Please pick a character: \n - '
+                while len(players) is not 0:
+                    message += players[0][0] + ' - '
+                    players.pop(0)
+                message += '\n Type select and then the character name. \n Or type create to make a new character.\n'
+                client.send(message.encode())
+            else:
+                message = 'Password incorrect. \n'
+                client.send(message.encode())
+                # Reset the username as the password was wrong
+                self.all_connected_clients[client] = 0
+
+        elif first_word == 'select':
+            # pop the first word out of the list
+            split_input.pop(0)
+            owned = self.db.check_value('players', 'player_name', split_input[0], 'owner_username', my_player)
+            if owned:
+                self.all_connected_clients[client] = split_input[0]
+                message = 'Logged in as ' + split_input[0]
+                client.send(message.encode())
+            else:
+                message = 'You do not own a character called ' + split_input[0]
+                client.send(message.encode())
 
         # if trying to talk send message to all other clients in the room
         elif first_word == 'say':

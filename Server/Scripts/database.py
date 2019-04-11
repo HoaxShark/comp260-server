@@ -36,15 +36,25 @@ class Database:
         result = self.cursor.fetchone()  # retrieve the first row
         return result[0]
 
-    # Checks the db for a matching value returns 0 if it doesn't match and 1 if it does
+    # Returns the value of the requested field in a table
+    def get_all_values(self, table_name, field_to_check, query_field, query_value):
+        self.cursor.execute('SELECT ' + field_to_check + ' FROM ' + table_name + ' WHERE ' + query_field + ' = ?',
+                            (query_value,))
+        result = self.cursor.fetchall()  # retrieve the first row
+        return result
+
+    # Checks the db for a matching value returns False if it doesn't match and True if it does
     def check_value(self, table_name, field_to_check, value_to_check, query_field, query_value):
         self.cursor.execute('SELECT ' + field_to_check + ' FROM ' + table_name + ' WHERE ' + query_field + ' = ?',
                             (query_value,))
         result = self.cursor.fetchone()  # retrieve the first row
-        if result[0] == value_to_check:
-            return 1
-        elif result[0] != value_to_check:
-            return 0
+        if result != None:
+            if result[0] == value_to_check:
+                return True
+            elif result[0] != value_to_check:
+                return False
+        else:
+            return False
 
     # Update a value
     def change_value(self, table_name, field_to_change, new_value, query_field, query_value):

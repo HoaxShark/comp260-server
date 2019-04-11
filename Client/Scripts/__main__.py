@@ -8,7 +8,7 @@ import sys
 import threading
 import socket
 
-local_host = False
+local_host = True
 
 
 class Client:
@@ -55,6 +55,8 @@ class Client:
                         # connect to the IP address using port for server hosting
                         self.my_socket.connect(("46.101.56.200", 9199))
                     self.is_connected = True
+                    # When connecting make sure logged_in is set to false
+                    self.my_window.set_logged_in(False)
                     # update the socket in the input_manager
                     self.input_manager.my_socket = self.my_socket
                     self.my_window.textEdit.append("<font color='green'>Connected to server.</font>")
