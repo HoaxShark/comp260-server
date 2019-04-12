@@ -56,13 +56,13 @@ class Input:
             return
 
         # if receiving username_login. username_login, username, password
-        elif first_word == 'username':
+        elif first_word == '#username':
             # pop the first word out of the list
             split_input.pop(0)
             # check the username exists
             exists = self.db.check_value('users', 'username', split_input[0], 'username', split_input[0])
             if exists:
-                salt = 'username_salt '
+                salt = '#username_salt '
                 salt += self.db.get_value('users', 'salt', 'username', split_input[0])
                 # Assign the username to the client
                 self.all_connected_clients[client] = split_input[0]
@@ -72,13 +72,13 @@ class Input:
                 client.send(message.encode())
 
         # Check password for user
-        elif first_word == 'username_salt':
+        elif first_word == '#username_salt':
             # pop the first word out of the list
             split_input.pop(0)
             # check the password is correct
             password_correct = self.db.check_value('users', 'password', split_input[0], 'username', my_player)
             if password_correct:
-                login_accepted = 'login_accepted'
+                login_accepted = '#login_accepted'
                 client.send(login_accepted.encode())
                 message = 'You have logged in.\n'
                 client.send(message.encode())
@@ -94,6 +94,23 @@ class Input:
                 client.send(message.encode())
                 # Reset the username as the password was wrong
                 self.all_connected_clients[client] = 0
+
+        # Create new account, format: username password salt?
+        elif first_word == '#create_account':
+            # pop the first word out of the list
+            split_input.pop(0)
+            # split the username and password
+            split_input = split_input[0].split(' ', 1)
+            username = split_input[0]
+            password = split_input[1]
+            exists = self.db.check_value('users', 'username', username, 'username', username)
+            if exists:
+                message = 'Username already taken \n'
+                client.send(message.encode())
+            else:
+                self.db.add_user(username, password, 'testsalt')
+                message = 'User added, please log in. \n'
+                client.send(message.encode())
 
         elif first_word == 'select':
             # pop the first word out of the list

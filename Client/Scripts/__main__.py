@@ -66,7 +66,7 @@ class Client:
                     self.is_connected = False
                     # No connection so reset logged in
                     self.my_window.set_logged_in(False)
-                    #self.my_window.textEdit.append("<font color='red'>Connection attempt failed. Trying again.</font>")
+                    self.my_window.textEdit.append("<font color='red'>Connection attempt failed. Trying again.</font>")
                     sleep(2)
 
     # Entry point of programme

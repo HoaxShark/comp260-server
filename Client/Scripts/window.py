@@ -1,7 +1,19 @@
 from PyQt5 import QtWidgets, uic, QtCore
-from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtCore import Qt
 from queue import *
+
+
+class LoginWidget(QtWidgets.QWidget):
+    def __init__(self, parent=None):
+        super(LoginWidget, self).__init__(parent)
+        self.login_widget = uic.loadUi('login_widget_layout.ui', self)
+
+        # Center
+        self.move(parent.rect().center() - self.rect().center())
+
+        # Set up login window buttons
+        self.login_widget.login_button.clicked.connect(parent.login_clicked)
+        self.login_widget.create_account_button.clicked.connect(parent.create_account_clicked)
 
 
 class Window(QtWidgets.QMainWindow):
@@ -9,7 +21,6 @@ class Window(QtWidgets.QMainWindow):
     def __init__(self):
         QtWidgets.QMainWindow.__init__(self)
         self.ui = uic.loadUi('gui_layout.ui', self)
-        self.login_widget = uic.loadUi('login_widget_layout.ui', self)
         self.input_manager = ''
         # queue that holds all messages from the server
         self.message_queue = Queue()
@@ -22,17 +33,38 @@ class Window(QtWidgets.QMainWindow):
         self.salt = ''
         self.logged_in = False
 
-        # Set up login window buttons
-        self.login_widget.login_button.clicked.connect(self.login_clicked)
-        self.login_widget.create_account_button.clicked.connect(self.create_account_clicked)
-        self.login_widget.setEnabled(False)
+        self.username = ''
+        self.password = ''
+
+        self.login_widget = LoginWidget(self)
 
     def create_account_clicked(self):
-        print('clicking create account button')
+        # Set username and password
+        self.username = self.login_widget.username_lineEdit.text()
+        self.password = self.login_widget.password_lineEdit.text()
+
+        # Clear widget input lines
+        self.login_widget.username_lineEdit.clear()
+        self.login_widget.password_lineEdit.clear()
+
+        # Form message and send using input manager
+        message = '#create_account ' + self.username + ' ' + self.password
+        self.input_manager.player_input(message)
 
     def login_clicked(self):
-        self.logged_in = True
-        print('login button pushed')
+        # Set username and password
+        self.username = self.login_widget.username_lineEdit.text()
+        self.password = self.login_widget.password_lineEdit.text()
+
+        # Send over to the input manager
+        self.input_manager.set_username_password(self.username, self.password)
+
+        # Clear widget input lines
+        self.login_widget.username_lineEdit.clear()
+        self.login_widget.password_lineEdit.clear()
+
+        # Tell input manager to send username to the server
+        self.input_manager.send_username()
 
     def set_logged_in(self, logged_in):
         self.logged_in = logged_in
@@ -40,7 +72,7 @@ class Window(QtWidgets.QMainWindow):
     def window_draw(self):
         self.ui.show()
         if self.logged_in != True:
-            self.login_widget.setEnabled(True)
+            self.login_widget.show()
 
     # runs during alongside the window, use as an update function
     def timerEvent(self):
@@ -52,17 +84,23 @@ class Window(QtWidgets.QMainWindow):
             # stores the first word of the input string (use this across the board)
             first_word = split_input[0].lower()
 
-            if first_word == 'username_salt':
+            if first_word == '#username_salt':
                 self.salt = split_input[1]
+                # Set salt
                 self.input_manager.set_salt(self.salt)
-            elif first_word == 'login_accepted':
+                # Tell input manager to salt and send password
+                self.input_manager.send_password()
+
+            elif first_word == '#login_accepted':
                 self.logged_in = True
+                self.login_widget.close()
+
             else:
                 self.textEdit.append(current_input)
 
     # sends entered text to the input manager if not blank, then clears the text box
     def text_enter(self):
-        if self.lineEdit.text() != '':
+        if self.lineEdit.text() != '' and self.logged_in:
             self.input_manager.player_input(self.lineEdit.text())
         self.lineEdit.clear()
 

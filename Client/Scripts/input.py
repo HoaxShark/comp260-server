@@ -6,9 +6,24 @@ class Input:
     def __init__(self, my_socket):
         self.my_socket = my_socket
         self.salt = ''
+        self.password = ''
+        self.username = ''
 
     def set_salt(self, salt):
         self.salt = salt
+
+    def set_username_password(self, username, password):
+        self.username = username
+        self.password = password
+
+    def send_username(self):
+        message = '#username ' + self.username
+        self.my_socket.send(message.encode())
+
+    def send_password(self):
+        # SALT PASSWORD HERE AND SEND
+        message = '#username_salt ' + self.password
+        self.my_socket.send(message.encode())
 
     def player_input(self, new_input):
         current_input = new_input  # Get input from player
@@ -18,12 +33,4 @@ class Input:
         first_word = split_input[0].lower()
 
         if self.my_socket is not None:
-            if first_word == 'password':
-                # do password salting here
-                salted_password = 'username_salt '
-                salted_password += split_input[1]
-                self.my_socket.send(salted_password.encode())
-
-            # Send normal messages
-            else:
-                self.my_socket.send(current_input.encode())
+            self.my_socket.send(current_input.encode())
