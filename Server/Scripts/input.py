@@ -87,7 +87,7 @@ class Input:
                 while len(players) is not 0:
                     message += players[0][0] + ' - '
                     players.pop(0)
-                message += '\n Type select and then the character name. \n Or type create to make a new character.\n'
+                message += '\n Type select and then the character name. \n Or type create then a character name to make a new character.\n'
                 client.send(message.encode())
             else:
                 message = 'Password incorrect. \n'
