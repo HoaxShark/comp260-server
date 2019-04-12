@@ -1,4 +1,5 @@
 from PyQt5 import QtWidgets, uic, QtCore
+from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtCore import Qt
 from queue import *
 
@@ -8,6 +9,7 @@ class Window(QtWidgets.QMainWindow):
     def __init__(self):
         QtWidgets.QMainWindow.__init__(self)
         self.ui = uic.loadUi('gui_layout.ui', self)
+        self.login_widget = uic.loadUi('login_widget_layout.ui', self)
         self.input_manager = ''
         # queue that holds all messages from the server
         self.message_queue = Queue()
@@ -20,11 +22,25 @@ class Window(QtWidgets.QMainWindow):
         self.salt = ''
         self.logged_in = False
 
+        # Set up login window buttons
+        self.login_widget.login_button.clicked.connect(self.login_clicked)
+        self.login_widget.create_account_button.clicked.connect(self.create_account_clicked)
+        self.login_widget.setEnabled(False)
+
+    def create_account_clicked(self):
+        print('clicking create account button')
+
+    def login_clicked(self):
+        self.logged_in = True
+        print('login button pushed')
+
     def set_logged_in(self, logged_in):
         self.logged_in = logged_in
 
     def window_draw(self):
         self.ui.show()
+        if self.logged_in != True:
+            self.login_widget.setEnabled(True)
 
     # runs during alongside the window, use as an update function
     def timerEvent(self):
