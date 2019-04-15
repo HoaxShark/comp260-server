@@ -56,6 +56,27 @@ class Database:
         else:
             return False
 
+    # Gets the connection from the current room
+    def get_connection(self, connection_direction, current_room):
+        self.cursor.execute('SELECT ' + connection_direction + ' FROM dungeon WHERE room_id = ?',
+                            (current_room,))
+        result = self.cursor.fetchone()  # retrieve the first row
+        return result[0]
+
+    # Gets the players current room
+    def get_current_room(self, my_player):
+        self.cursor.execute('SELECT current_room FROM players WHERE player_name = ?',
+                            (my_player,))
+        result = self.cursor.fetchone()  # retrieve the first row
+        return result[0]
+
+    # Gets the players current room
+    def set_current_room(self, my_player, new_room):
+        self.cursor.execute('UPDATE players SET current_room = ? WHERE player_name = ?',
+                            (new_room, my_player,))
+        self.db.commit()
+        print('Updated current room')
+
     # Update a value
     def change_value(self, table_name, field_to_change, new_value, query_field, query_value):
         # Insert user

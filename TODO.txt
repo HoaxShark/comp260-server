@@ -1,9 +1,5 @@
 on server start read from the dungeon table
 
-Password/Username log in for users connected to user table
-
-On lo gin select player and read data from player table
-
 salt passwords
 
 encrypt/decrypt all sent data (Use AES required, fernet or crptodome, use both?)
@@ -16,9 +12,10 @@ encryption keys need to be sent first and encrypted, how best to do this?
 
 tie in a new UI section of the client to the window using logged_in
 
-send 'username' as first word to access username
-send 'password'as first word to access password
-
 salt is sent when username is entered correctly
 
 check value is only returning a single instance
+
+require login when sever dies and restarts
+
+create character command
