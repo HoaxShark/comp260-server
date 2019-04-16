@@ -135,14 +135,37 @@ class Input:
                 message = 'User added, please log in. \n'
                 client.send(message.encode())
 
+        # Create new account, format: username password salt?
+        elif first_word == 'create':
+            # pop the first word out of the list
+            split_input.pop(0)
+            exists = self.db.check_value('players', 'player_name', split_input[0], 'player_name', split_input[0])
+            if exists:
+                message = 'Player name already taken \n'
+                client.send(message.encode())
+            else:
+                self.db.add_player(my_player, split_input[0])
+                message = 'Player added, please use select then player name. \n'
+                client.send(message.encode())
+
         elif first_word == 'select':
             # pop the first word out of the list
             split_input.pop(0)
-            owned = self.db.check_value('players', 'player_name', split_input[0], 'owner_username', my_player)
-            if owned:
+            # If this user owns the player they are trying to log in as
+            player_is_owned = False
+            # Get all players owned by the user
+            owned_players = self.db.get_all_values('players', 'player_name', 'owner_username', my_player)
+            # Check all owned players against the log in
+            while len(owned_players) is not 0:
+                if owned_players[0][0] == split_input[0]:
+                    player_is_owned = True
+                owned_players.pop(0)
+            # If they own the player give them control and inform the user
+            if player_is_owned:
                 self.all_connected_clients[client] = split_input[0]
                 message = 'Logged in as ' + split_input[0]
                 client.send(message.encode())
+            # If they don't own the player tell them
             else:
                 message = 'You do not own a character called ' + split_input[0]
                 client.send(message.encode())
