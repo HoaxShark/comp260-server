@@ -2,6 +2,8 @@ from PyQt5 import QtWidgets, uic, QtCore
 from PyQt5.QtCore import Qt
 from queue import *
 
+import bcrypt
+
 
 class LoginWidget(QtWidgets.QWidget):
     def __init__(self, parent=None):
@@ -44,12 +46,23 @@ class Window(QtWidgets.QMainWindow):
         self.username = self.login_widget.username_lineEdit.text()
         self.password = self.login_widget.password_lineEdit.text()
 
+        # Generate the salt for a new account
+        salt = bcrypt.gensalt(12)
+        # Encode password
+        self.password = self.password.encode('utf-8')
+        # Hash password
+        self.password = bcrypt.hashpw(self.password, salt)
+        # Decode password
+        self.password = self.password.decode()
+        # Decode salt
+        salt = salt.decode()
+
         # Clear widget input lines
         self.login_widget.username_lineEdit.clear()
         self.login_widget.password_lineEdit.clear()
 
         # Form message and send using input manager
-        message = '#create_account ' + self.username + ' ' + self.password
+        message = '#create_account ' + self.username + ' ' + self.password + ' ' + salt
         self.input_manager.player_input(message)
 
     def login_clicked(self):

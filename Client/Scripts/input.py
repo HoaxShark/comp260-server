@@ -1,5 +1,5 @@
 import socket
-
+import bcrypt
 
 class Input:
 
@@ -21,7 +21,13 @@ class Input:
         self.my_socket.send(message.encode())
 
     def send_password(self):
-        # SALT PASSWORD HERE AND SEND
+        # Encode password and salt
+        self.password = self.password.encode('utf-8')
+        self.salt = self.salt.encode('utf-8')
+        # Hash password
+        self.password = bcrypt.hashpw(self.password, self.salt)
+        # Decode password
+        self.password = self.password.decode()
         message = '#username_salt ' + self.password
         self.my_socket.send(message.encode())
 

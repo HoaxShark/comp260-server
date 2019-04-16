@@ -1,5 +1,3 @@
-salt passwords
-
 encrypt/decrypt all sent data (Use AES required, fernet or crptodome, use both?)
 
 packet indexing for sending between client and server
@@ -8,6 +6,5 @@ Split these up? Pad with random data at points?
 
 encryption keys need to be sent first and encrypted, how best to do this?
 
-salt is sent when username is entered correctly
-
 Make old input functions read from the DB so they work again
+

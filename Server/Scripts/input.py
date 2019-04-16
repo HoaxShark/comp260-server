@@ -1,5 +1,7 @@
 from Scripts import database
 
+import bcrypt
+
 
 class Input:
     def __init__(self):
@@ -139,15 +141,16 @@ class Input:
                 # pop the first word out of the list
                 split_input.pop(0)
                 # split the username and password
-                split_input = split_input[0].split(' ', 1)
+                split_input = split_input[0].split(' ')
                 username = split_input[0]
                 password = split_input[1]
+                salt = split_input[2]
                 exists = self.db.check_value('users', 'username', username, 'username', username)
                 if exists:
                     message = 'Username already taken \n'
                     client.send(message.encode())
                 else:
-                    self.db.add_user(username, password, 'testsalt')
+                    self.db.add_user(username, password, salt)
                     message = 'User added, please log in. \n'
                     client.send(message.encode())
 
