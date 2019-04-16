@@ -32,6 +32,7 @@ class Window(QtWidgets.QMainWindow):
         self.client = ''
         self.salt = ''
         self.logged_in = False
+        self.connected = False
 
         self.username = ''
         self.password = ''
@@ -69,13 +70,21 @@ class Window(QtWidgets.QMainWindow):
     def set_logged_in(self, logged_in):
         self.logged_in = logged_in
 
+    def set_connected(self, connected):
+        self.connected = connected
+
     def window_draw(self):
         self.ui.show()
-        if self.logged_in != True:
-            self.login_widget.show()
+        self.login_widget.close()
 
     # runs during alongside the window, use as an update function
     def timerEvent(self):
+        # If not logged in display the log in widget
+        if self.logged_in == False and self.connected == True:
+            self.login_widget.show()
+        else:
+            self.login_widget.close()
+
         # while messages in the queue print them to client
         while self.message_queue.qsize() > 0:
             current_input = self.message_queue.get()  # Get messege out the queue

@@ -60,6 +60,8 @@ def accept_clients(server_socket):
 
         # copy the client list into the input_manager
         input_manager.all_connected_clients = dict(clients)
+        # add new client to the login area
+        input_manager.add_client_to_login_area(new_client[0])
         # release the lock on the dictionary
         clientsLock.release()
 
@@ -109,6 +111,8 @@ if __name__ == '__main__':
         for client in lost_clients:
             # pop the lost client from the dictionary of clients
             clients.pop(client)
+            # Clear client from lists in input manager
+            input_manager.clear_client_from_lists(client)
             # update the client list in input_manager
             input_manager.all_connected_clients = clients
 

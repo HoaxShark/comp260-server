@@ -55,14 +55,15 @@ class Client:
                         # connect to the IP address using port for server hosting
                         self.my_socket.connect(("46.101.56.200", 9199))
                     self.is_connected = True
-                    # When connecting make sure logged_in is set to false
-                    self.my_window.set_logged_in(False)
                     # update the socket in the input_manager
                     self.input_manager.my_socket = self.my_socket
                     self.my_window.textEdit.append("<font color='green'>Connected to server.</font>")
+                    # When connected set connected to True for the window
+                    self.my_window.set_connected(True)
                     sleep(2)
 
                 except socket.error:
+                    self.my_window.set_connected(False)
                     self.is_connected = False
                     # No connection so reset logged in
                     self.my_window.set_logged_in(False)
