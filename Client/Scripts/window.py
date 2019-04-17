@@ -100,7 +100,7 @@ class Window(QtWidgets.QMainWindow):
 
         # while messages in the queue print them to client
         while self.message_queue.qsize() > 0:
-            current_input = self.message_queue.get()  # Get messege out the queue
+            current_input = self.message_queue.get()  # Get message out the queue
             # split the player input string
             split_input = current_input.split(' ', 1)
             # stores the first word of the input string (use this across the board)

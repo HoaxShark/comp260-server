@@ -10,3 +10,4 @@ Make old input functions read from the DB so they work again
 
 Check that login and pass aren't blank!
 
+DB room info need to end in \n
