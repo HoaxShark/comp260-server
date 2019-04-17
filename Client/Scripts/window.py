@@ -63,7 +63,7 @@ class Window(QtWidgets.QMainWindow):
 
         # Form message and send using input manager
         message = '#create_account ' + self.username + ' ' + self.password + ' ' + salt
-        self.input_manager.player_input(message)
+        self.input_manager.send_message(message)
 
     def login_clicked(self):
         # Set username and password
@@ -123,7 +123,7 @@ class Window(QtWidgets.QMainWindow):
     # sends entered text to the input manager if not blank, then clears the text box
     def text_enter(self):
         if self.lineEdit.text() != '' and self.logged_in:
-            self.input_manager.player_input(self.lineEdit.text())
+            self.input_manager.send_message(self.lineEdit.text())
         self.lineEdit.clear()
 
     def keyPressEvent(self, event):

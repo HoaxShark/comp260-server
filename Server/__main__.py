@@ -1,10 +1,10 @@
 import socket
 import threading
 import time
+import json
 from queue import *
 
 from Scripts import input
-from Scripts import player
 from Scripts import dungeon
 from Scripts import database
 
@@ -19,6 +19,7 @@ message_queue = Queue()
 
 lost_clients = []
 
+# True if testing on a local host
 local_host = True
 
 db = database.Database()
@@ -30,9 +31,18 @@ def receive_thread(client_socket):
     receive_is_running = True
     while receive_is_running:
         try:
-            # store the client and message in the queue
-            message_queue.put((client_socket, client_socket.recv(4096).decode("utf-8")))
-            print("Adding to queue")
+            # Get the ID packet
+            packet_id = client_socket.recv(7)
+
+            if packet_id.decode('utf-8') == 'BestMUD':
+                # Get size of incoming data
+                payload_size = int.from_bytes(client_socket.recv(2), 'little')
+                payload_data = client_socket.recv(payload_size)
+                # Get payload data is a dict format
+                data_from_client = json.loads(payload_data)
+                # Store message from client in the queue
+                message_queue.put((client_socket, data_from_client['message']))
+
         except socket.error:
             print("Client lost.")
             lost_clients.append(client_socket)

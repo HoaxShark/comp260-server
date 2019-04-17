@@ -1,13 +1,19 @@
-import socket
 import bcrypt
+import json
+
 
 class Input:
 
     def __init__(self, my_socket):
         self.my_socket = my_socket
+        # Salt to be used with the passwords
         self.salt = ''
+        # Users login password
         self.password = ''
+        # Users login username
         self.username = ''
+        # Used to confirm to the server that the incoming packets should be read
+        self.packet_ID = 'BestMUD'
 
     def set_salt(self, salt):
         self.salt = salt
@@ -18,7 +24,7 @@ class Input:
 
     def send_username(self):
         message = '#username ' + self.username
-        self.my_socket.send(message.encode())
+        self.send_message(message)
 
     def send_password(self):
         # Encode password and salt
@@ -29,14 +35,18 @@ class Input:
         # Decode password
         self.password = self.password.decode()
         message = '#username_salt ' + self.password
-        self.my_socket.send(message.encode())
+        self.send_message(message)
 
-    def player_input(self, new_input):
-        current_input = new_input  # Get input from player
-        # split the player input string
-        split_input = current_input.split(' ', 1)
-        # stores the first word of the input string (use this across the board)
-        first_word = split_input[0].lower()
+    def send_message(self, message):
+        # Dictionary of information to send to the server, room to expand
+        my_dict = {'message': message}
+        # Transform dictionary into json
+        json_packet = json.dumps(my_dict)
+        # Header used to inform the server of the upcoming packet size
+        header = len(json_packet).to_bytes(2, byteorder='little')
 
         if self.my_socket is not None:
-            self.my_socket.send(current_input.encode())
+            # Send all required information to the server
+            self.my_socket.send(self.packet_ID.encode())
+            self.my_socket.send(header)
+            self.my_socket.send(json_packet.encode())

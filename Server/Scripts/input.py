@@ -1,7 +1,5 @@
 from Scripts import database
 
-import bcrypt
-
 
 class Input:
     def __init__(self):
