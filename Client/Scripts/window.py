@@ -46,6 +46,21 @@ class Window(QtWidgets.QMainWindow):
         self.username = self.login_widget.username_lineEdit.text()
         self.password = self.login_widget.password_lineEdit.text()
 
+        # Check username or password are not blank
+        if self.username == '' or self.password == '':
+            self.textEdit.append('You must enter a username and password')
+            return
+
+        # Check password is at least 6 characters long
+        if len(self.password) < 6:
+            self.textEdit.append('Password must be at least 6 characters long')
+            return
+
+        # Check the username is at least 4 characters long
+        if len(self.username) < 4:
+            self.textEdit.append('Username must be at least 4 characters long')
+            return
+
         # Generate the salt for a new account
         salt = bcrypt.gensalt(12)
         # Encode password
@@ -69,6 +84,10 @@ class Window(QtWidgets.QMainWindow):
         # Set username and password
         self.username = self.login_widget.username_lineEdit.text()
         self.password = self.login_widget.password_lineEdit.text()
+
+        if self.username == '' or self.password == '':
+            self.textEdit.append('You must enter a username and password')
+            return
 
         # Send over to the input manager
         self.input_manager.set_username_password(self.username, self.password)
