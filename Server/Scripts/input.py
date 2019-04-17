@@ -5,11 +5,12 @@ class Input:
     def __init__(self):
         self.lowered_input = ''  # lowercase version of what was input
         self.current_input = ''  # latest input from the client
-        self.all_connected_clients = ''  # dictionary of all current clients
+        self.all_connected_clients = {}  # dictionary of all current clients
         self.current_client = ''  # the client input is currently being managed for
         self.db = database.Database()  # database reference
         self.clients_login_area = []  # Stores users able to access login commands
         self.clients_play_area = []  # Stores users able to access play commands
+        self.logged_in_users = {}  # Dictionary of all users that are logged in
 
     # Allows main to add newly connected clients to the login area
     def add_client_to_login_area(self, client):
@@ -21,6 +22,8 @@ class Input:
             self.clients_login_area.remove(client)
         if client in self.clients_play_area:
             self.clients_play_area.remove(client)
+        if client in self.logged_in_users:
+            del self.logged_in_users[client]
 
     # returns all other clients in the same room
     def check_room_for_players(self, my_player):
@@ -101,11 +104,19 @@ class Input:
                 # check the username exists
                 exists = self.db.check_value('users', 'username', split_input[0], 'username', split_input[0])
                 if exists:
-                    salt = '#username_salt '
-                    salt += self.db.get_value('users', 'salt', 'username', split_input[0])
-                    # Assign the username to the client
-                    self.all_connected_clients[client] = split_input[0]
-                    client.send(salt.encode())
+                    already_logged_in = False
+                    for client_info, username in self.logged_in_users.items():
+                        if username == split_input[0]:
+                            already_logged_in = True
+                    if already_logged_in:
+                        message = 'This user is already logged in'
+                        client.send(message.encode())
+                    else:
+                        salt = '#username_salt '
+                        salt += self.db.get_value('users', 'salt', 'username', split_input[0])
+                        # Assign the username to the client
+                        self.all_connected_clients[client] = split_input[0]
+                        client.send(salt.encode())
                 else:
                     message = 'Username does not exist'
                     client.send(message.encode())
@@ -117,10 +128,14 @@ class Input:
                 # check the password is correct
                 password_correct = self.db.check_value('users', 'password', split_input[0], 'username', my_player)
                 if password_correct:
+                    # Tell the client that the login has been accepted
                     login_accepted = '#login_accepted'
                     client.send(login_accepted.encode())
+                    # Tell user they have logged in
                     message = 'You have logged in.\n'
                     client.send(message.encode())
+                    # Assign client info and username to the logged in clients dictionary
+                    self.logged_in_users[client] = my_player
                     players = self.db.get_all_values('players', 'player_name', 'owner_username', my_player)
                     message = 'Please pick a character: \n - '
                     while len(players) is not 0:

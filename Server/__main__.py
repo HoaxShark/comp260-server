@@ -68,8 +68,8 @@ def accept_clients(server_socket):
         #start_message = 'You stand in the city of Elerand, before you stands the magnficent church of Phelonia, known to have trained the greatest of holy knights.\n'
         #new_client[0].send(start_message.encode())
 
-        # copy the client list into the input_manager
-        input_manager.all_connected_clients = dict(clients)
+        # Add the client into the input_manager client list
+        input_manager.all_connected_clients[new_client[0]] = 0
         # add new client to the login area
         input_manager.add_client_to_login_area(new_client[0])
         # release the lock on the dictionary
