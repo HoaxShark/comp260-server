@@ -115,6 +115,7 @@ class Database:
         self.cursor.execute('''
                         CREATE TABLE IF NOT EXISTS dungeon(
                         room_id INTEGER PRIMARY KEY, 
+                        room_name TEXT,
                         base_description TEXT, 
                         detailed_description TEXT, 
                         north INTEGER DEFAULT '', 

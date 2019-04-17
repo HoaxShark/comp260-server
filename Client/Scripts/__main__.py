@@ -7,6 +7,7 @@ from time import sleep
 import sys
 import threading
 import socket
+import json
 
 local_host = True
 
@@ -32,7 +33,18 @@ class Client:
         while self.is_running:
             if self.is_connected:
                 try:
-                    self.my_window.message_queue.put(self.my_socket.recv(4096).decode("utf-8"))
+                    # Get the ID packet
+                    packet_id = self.my_socket.recv(7)
+
+                    if packet_id.decode('utf-8') == 'BestMUD':
+                        # Get size of incoming data
+                        payload_size = int.from_bytes(self.my_socket.recv(2), 'little')
+                        payload_data = self.my_socket.recv(payload_size)
+                        # Get payload data is a dict format
+                        data_from_server = json.loads(payload_data)
+                        # Store message from client in the queue
+                        self.my_window.message_queue.put(data_from_server['message'])
+
                 except socket.error:
                     self.my_socket = None
                     self.is_connected = False

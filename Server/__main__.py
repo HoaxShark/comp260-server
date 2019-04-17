@@ -66,7 +66,6 @@ def accept_clients(server_socket):
         my_receive_thread.start()
 
         #start_message = 'You stand in the city of Elerand, before you stands the magnficent church of Phelonia, known to have trained the greatest of holy knights.\n'
-        #new_client[0].send(start_message.encode())
 
         # Add the client into the input_manager client list
         input_manager.all_connected_clients[new_client[0]] = 0
@@ -111,7 +110,7 @@ if __name__ == '__main__':
                 client_reply = input_manager.player_input(client_and_message[1], client_and_message[0], my_dungeon)
                 if client_reply is not None:
                     # send back the data received
-                    client_and_message[0].send(client_reply.encode())
+                    input_manager.send_message(client_reply, client_and_message[0])
 
             except socket.error:
                 # add the lost client to the list of lost clients

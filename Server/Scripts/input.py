@@ -1,4 +1,5 @@
 from Scripts import database
+import json
 
 
 class Input:
@@ -11,6 +12,7 @@ class Input:
         self.clients_login_area = []  # Stores users able to access login commands
         self.clients_play_area = []  # Stores users able to access play commands
         self.logged_in_users = {}  # Dictionary of all users that are logged in
+        self.packet_ID = 'BestMUD'  # Used to confirm to the server that the incoming packets should be read
 
     # Allows main to add newly connected clients to the login area
     def add_client_to_login_area(self, client):
@@ -44,7 +46,21 @@ class Input:
         clients_in_room = self.check_room_for_players(my_player)
         message_to_say = my_player + " has " + joined_or_left + " the room"
         for client in clients_in_room:
-            client.send(message_to_say.encode())
+            self.send_message(message_to_say, client)
+
+    def send_message(self, message, client):
+        # Dictionary of information to send to the server, room to expand
+        my_dict = {'message': message}
+        # Transform dictionary into json
+        json_packet = json.dumps(my_dict)
+        # Header used to inform the server of the upcoming packet size
+        header = len(json_packet).to_bytes(2, byteorder='little')
+
+        if self.current_client is not None:
+            # Send all required information to the server
+            client.send(self.packet_ID.encode())
+            client.send(header)
+            client.send(json_packet.encode())
 
     # shows a full list of possible commands in the game
     def print_help(self):
@@ -110,16 +126,16 @@ class Input:
                             already_logged_in = True
                     if already_logged_in:
                         message = 'This user is already logged in'
-                        client.send(message.encode())
+                        self.send_message(message, client)
                     else:
                         salt = '#username_salt '
                         salt += self.db.get_value('users', 'salt', 'username', split_input[0])
                         # Assign the username to the client
                         self.all_connected_clients[client] = split_input[0]
-                        client.send(salt.encode())
+                        self.send_message(salt, client)
                 else:
                     message = 'Username does not exist'
-                    client.send(message.encode())
+                    self.send_message(message, client)
 
             # Check password for user
             elif first_word == '#username_salt':
@@ -130,10 +146,10 @@ class Input:
                 if password_correct:
                     # Tell the client that the login has been accepted
                     login_accepted = '#login_accepted'
-                    client.send(login_accepted.encode())
+                    self.send_message(login_accepted, client)
                     # Tell user they have logged in
                     message = 'You have logged in.\n'
-                    client.send(message.encode())
+                    self.send_message(message, client)
                     # Assign client info and username to the logged in clients dictionary
                     self.logged_in_users[client] = my_player
                     players = self.db.get_all_values('players', 'player_name', 'owner_username', my_player)
@@ -142,10 +158,10 @@ class Input:
                         message += players[0][0] + ' - '
                         players.pop(0)
                     message += '\n Type select and then the character name. \n Or type create then a character name to make a new character.\n'
-                    client.send(message.encode())
+                    self.send_message(message, client)
                 else:
                     message = 'Password incorrect. \n'
-                    client.send(message.encode())
+                    self.send_message(message, client)
                     # Reset the username as the password was wrong
                     self.all_connected_clients[client] = 0
 
@@ -161,11 +177,11 @@ class Input:
                 exists = self.db.check_value('users', 'username', username, 'username', username)
                 if exists:
                     message = 'Username already taken \n'
-                    client.send(message.encode())
+                    self.send_message(message, client)
                 else:
                     self.db.add_user(username, password, salt)
                     message = 'User added, please log in. \n'
-                    client.send(message.encode())
+                    self.send_message(message, client)
 
             # Create new account, format: username password salt?
             elif first_word == 'create':
@@ -174,11 +190,11 @@ class Input:
                 exists = self.db.check_value('players', 'player_name', split_input[0], 'player_name', split_input[0])
                 if exists:
                     message = 'Player name already taken \n'
-                    client.send(message.encode())
+                    self.send_message(message, client)
                 else:
                     self.db.add_player(my_player, split_input[0])
                     message = 'Player added, please use select then player name. \n'
-                    client.send(message.encode())
+                    self.send_message(message, client)
 
             elif first_word == 'select':
                 # pop the first word out of the list
@@ -201,11 +217,11 @@ class Input:
                     # Remove client from login area
                     self.clients_login_area.remove(self.current_client)
                     message = 'Logged in as ' + split_input[0]
-                    client.send(message.encode())
+                    self.send_message(message, client)
                 # If they don't own the player tell them
                 else:
                     message = 'You do not own a character called ' + split_input[0]
-                    client.send(message.encode())
+                    self.send_message(message, client)
 
         # If client is in the play area they can then access the play commands
         elif client in self.clients_play_area:
@@ -219,11 +235,11 @@ class Input:
                 message_to_say += ''.join(split_input) + '</font>'
                 # create and send message to input client about what they said
                 message_to_yourself = '<font color="dark blue">You say: ' + ''.join(split_input) + '</font>'
-                client.send(message_to_yourself.encode())
+                self.send_message(message_to_yourself, client)
                 # send message to all clients in room
                 clients_in_room = self.check_room_for_players(my_player)
                 for client in clients_in_room:
-                    client.send(message_to_say.encode())
+                    self.send_message(message_to_say, client)
                 return
 
             elif first_word == 'pickup':
