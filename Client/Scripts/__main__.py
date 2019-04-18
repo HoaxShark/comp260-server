@@ -37,6 +37,9 @@ class Client:
                     packet_id = self.my_socket.recv(7)
 
                     if packet_id.decode('utf-8') == 'BestMUD':
+                        ################
+                        # RUN DECRYPTION HERE
+                        ################
                         # Get size of incoming data
                         payload_size = int.from_bytes(self.my_socket.recv(2), 'little')
                         payload_data = self.my_socket.recv(payload_size)
@@ -44,6 +47,15 @@ class Client:
                         data_from_server = json.loads(payload_data)
                         # Store message from client in the queue
                         self.my_window.message_queue.put(data_from_server['message'])
+
+                    elif packet_id.decode('utf-8') == 'Setup!!':
+                        # Get size of incoming data
+                        payload_size = int.from_bytes(self.my_socket.recv(2), 'little')
+                        payload_data = self.my_socket.recv(payload_size)
+                        # Get payload data is a dict format
+                        key = json.loads(payload_data)
+                        # Set the key in the input manager
+                        self.input_manager.encryption_key = key['key']
 
                 except socket.error:
                     self.my_socket = None

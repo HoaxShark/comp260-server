@@ -12,7 +12,8 @@ class Input:
         self.clients_login_area = []  # Stores users able to access login commands
         self.clients_play_area = []  # Stores users able to access play commands
         self.logged_in_users = {}  # Dictionary of all users that are logged in
-        self.packet_ID = 'BestMUD'  # Used to confirm to the server that the incoming packets should be read
+        self.packet_id = 'BestMUD'  # Used to confirm to the server that the incoming packets should be read
+        self.setup_packet_id = 'Setup!!'  # Used to tell the client this message contains setup info
 
     # Allows main to add newly connected clients to the login area
     def add_client_to_login_area(self, client):
@@ -58,7 +59,23 @@ class Input:
 
         if self.current_client is not None:
             # Send all required information to the server
-            client.send(self.packet_ID.encode())
+            client.send(self.packet_id.encode())
+            client.send(header)
+            client.send(json_packet.encode())
+
+    # Send the initial setup message with the encryption key
+    def send_setup_info(self, key, client):
+        key = key.decode()
+        # Dictionary of information to send to the server, room to expand
+        my_dict = {'key': key}
+        # Transform dictionary into json
+        json_packet = json.dumps(my_dict)
+        # Header used to inform the server of the upcoming packet size
+        header = len(json_packet).to_bytes(2, byteorder='little')
+
+        if self.current_client is not None:
+            # Send all required information to the server
+            client.send(self.setup_packet_id.encode())
             client.send(header)
             client.send(json_packet.encode())
 

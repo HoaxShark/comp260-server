@@ -14,6 +14,8 @@ class Input:
         self.username = ''
         # Used to confirm to the server that the incoming packets should be read
         self.packet_ID = 'BestMUD'
+        # Stores the encryption key from the server
+        self.encryption_key = ''
 
     def set_salt(self, salt):
         self.salt = salt

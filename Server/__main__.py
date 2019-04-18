@@ -2,12 +2,15 @@ import socket
 import threading
 import time
 import json
-from queue import *
+import bcrypt
 
+from queue import *
 from Scripts import input
 from Scripts import dungeon
 from Scripts import database
 
+# Generate the encryption key for this instance
+encryption_key = bcrypt.gensalt(16)
 
 # dictionary of all connected clients
 clients = {}
@@ -67,6 +70,8 @@ def accept_clients(server_socket):
 
         #start_message = 'You stand in the city of Elerand, before you stands the magnficent church of Phelonia, known to have trained the greatest of holy knights.\n'
 
+        # Send setup message to the client with encryption key information
+        input_manager.send_setup_info(encryption_key, new_client[0])
         # Add the client into the input_manager client list
         input_manager.all_connected_clients[new_client[0]] = 0
         # add new client to the login area
