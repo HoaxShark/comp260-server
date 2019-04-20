@@ -1,6 +1,12 @@
 from Scripts import database
 import json
 
+from base64 import b64encode
+from base64 import b64decode
+
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad
+
 
 class Input:
     def __init__(self):
@@ -65,7 +71,7 @@ class Input:
 
     # Send the initial setup message with the encryption key
     def send_setup_info(self, key, client):
-        key = key.decode()
+        key = b64encode(key).decode('utf-8')  # key.decode()
         # Dictionary of information to send to the server, room to expand
         my_dict = {'key': key}
         # Transform dictionary into json
@@ -118,7 +124,7 @@ class Input:
         my_dungeon = dungeon
         my_player = self.all_connected_clients.get(client)
         # split the player input string
-        split_input = current_input.split(' ', 1)
+        split_input = current_input.decode().split(' ', 1)
         # stores the first word of the input string (use this across the board)
         first_word = split_input[0].lower()
 

@@ -4,13 +4,21 @@ import time
 import json
 import bcrypt
 
+from base64 import b64encode
+from base64 import b64decode
+
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad
+from Crypto.Util.Padding import unpad
+from Crypto.Random import get_random_bytes
+
 from queue import *
 from Scripts import input
 from Scripts import dungeon
 from Scripts import database
 
 # Generate the encryption key for this instance
-encryption_key = bcrypt.gensalt(16)
+encryption_key = get_random_bytes(16)
 
 # dictionary of all connected clients
 clients = {}
@@ -35,16 +43,23 @@ def receive_thread(client_socket):
     while receive_is_running:
         try:
             # Get the ID packet
-            packet_id = client_socket.recv(7)
+            client_message = client_socket.recv(35)
+            message_info = json.loads(client_message)
 
-            if packet_id.decode('utf-8') == 'BestMUD':
+            if message_info['id'] == 'BestMUD':
                 # Get size of incoming data
-                payload_size = int.from_bytes(client_socket.recv(2), 'little')
+                payload_size = message_info['header']
                 payload_data = client_socket.recv(payload_size)
                 # Get payload data is a dict format
                 data_from_client = json.loads(payload_data)
+                # Decrypt data
+                iv = b64decode(data_from_client['iv'])
+                ciphertext = b64decode(data_from_client['ciphertext'])
+                cipher = AES.new(encryption_key, AES.MODE_CBC, iv)
+                decrypted_message = unpad(cipher.decrypt(ciphertext), AES.block_size)
+
                 # Store message from client in the queue
-                message_queue.put((client_socket, data_from_client['message']))
+                message_queue.put((client_socket, decrypted_message))
 
         except socket.error:
             print("Client lost.")
