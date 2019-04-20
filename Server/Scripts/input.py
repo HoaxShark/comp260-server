@@ -2,7 +2,6 @@ from Scripts import database
 import json
 
 from base64 import b64encode
-from base64 import b64decode
 
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
@@ -20,6 +19,7 @@ class Input:
         self.logged_in_users = {}  # Dictionary of all users that are logged in
         self.packet_id = 'BestMUD'  # Used to confirm to the server that the incoming packets should be read
         self.setup_packet_id = 'Setup!!'  # Used to tell the client this message contains setup info
+        self.encryption_key = ''  # 16 bit key used for encryption
 
     # Allows main to add newly connected clients to the login area
     def add_client_to_login_area(self, client):
@@ -55,19 +55,25 @@ class Input:
         for client in clients_in_room:
             self.send_message(message_to_say, client)
 
+    # Send encrypted message to client
     def send_message(self, message, client):
-        # Dictionary of information to send to the server, room to expand
-        my_dict = {'message': message}
-        # Transform dictionary into json
-        json_packet = json.dumps(my_dict)
-        # Header used to inform the server of the upcoming packet size
-        header = len(json_packet).to_bytes(2, byteorder='little')
+        # Create cipher for the encrypted message
+        cipher = AES.new(self.encryption_key, AES.MODE_CBC)
+        # Encrypt message into bytes
+        ciphertext_bytes = cipher.encrypt(pad(message.encode('utf-8'), AES.block_size))
+        # Extract the initialisation vector
+        iv = b64encode(cipher.iv).decode('utf-8')
+        ciphertext = b64encode(ciphertext_bytes).decode('utf-8')
+        json_message = json.dumps({'iv': iv, 'ciphertext': ciphertext})
 
-        if self.current_client is not None:
+        # Header used to inform the server of the upcoming packet size
+        header = len(json_message).to_bytes(2, byteorder='little')
+
+        if client is not None:
             # Send all required information to the server
             client.send(self.packet_id.encode())
             client.send(header)
-            client.send(json_packet.encode())
+            client.send(json_message.encode())
 
     # Send the initial setup message with the encryption key
     def send_setup_info(self, key, client):
@@ -124,7 +130,7 @@ class Input:
         my_dungeon = dungeon
         my_player = self.all_connected_clients.get(client)
         # split the player input string
-        split_input = current_input.decode().split(' ', 1)
+        split_input = current_input.split(' ', 1)
         # stores the first word of the input string (use this across the board)
         first_word = split_input[0].lower()
 

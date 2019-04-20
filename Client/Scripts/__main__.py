@@ -4,6 +4,11 @@ from Scripts import window
 from PyQt5.QtWidgets import QApplication
 from time import sleep
 
+from base64 import b64decode
+
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import unpad
+
 import sys
 import threading
 import socket
@@ -37,16 +42,24 @@ class Client:
                     packet_id = self.my_socket.recv(7)
 
                     if packet_id.decode('utf-8') == 'BestMUD':
-                        ################
-                        # RUN DECRYPTION HERE
-                        ################
                         # Get size of incoming data
                         payload_size = int.from_bytes(self.my_socket.recv(2), 'little')
                         payload_data = self.my_socket.recv(payload_size)
                         # Get payload data is a dict format
-                        data_from_server = json.loads(payload_data)
+                        data_from_client = json.loads(payload_data)
+                        # Decrypt data
+                        iv = b64decode(data_from_client['iv'])
+                        ciphertext = b64decode(data_from_client['ciphertext'])
+
+                        # Convert the encryption key into the correct bytes
+                        byte_key = self.input_manager.encryption_key.encode('utf-8')
+                        byte_key = b64decode(byte_key)
+
+                        cipher = AES.new(byte_key, AES.MODE_CBC, iv)
+                        decrypted_message = unpad(cipher.decrypt(ciphertext), AES.block_size)
+
                         # Store message from client in the queue
-                        self.my_window.message_queue.put(data_from_server['message'])
+                        self.my_window.message_queue.put(decrypted_message.decode('utf-8'))
 
                     elif packet_id.decode('utf-8') == 'Setup!!':
                         # Get size of incoming data

@@ -2,13 +2,10 @@ import socket
 import threading
 import time
 import json
-import bcrypt
 
-from base64 import b64encode
 from base64 import b64decode
 
 from Crypto.Cipher import AES
-from Crypto.Util.Padding import pad
 from Crypto.Util.Padding import unpad
 from Crypto.Random import get_random_bytes
 
@@ -43,12 +40,11 @@ def receive_thread(client_socket):
     while receive_is_running:
         try:
             # Get the ID packet
-            client_message = client_socket.recv(35)
-            message_info = json.loads(client_message)
+            packet_id = client_socket.recv(7)
 
-            if message_info['id'] == 'BestMUD':
+            if packet_id.decode('utf-8') == 'BestMUD':
                 # Get size of incoming data
-                payload_size = message_info['header']
+                payload_size = int.from_bytes(client_socket.recv(2), 'little')
                 payload_data = client_socket.recv(payload_size)
                 # Get payload data is a dict format
                 data_from_client = json.loads(payload_data)
@@ -59,7 +55,7 @@ def receive_thread(client_socket):
                 decrypted_message = unpad(cipher.decrypt(ciphertext), AES.block_size)
 
                 # Store message from client in the queue
-                message_queue.put((client_socket, decrypted_message))
+                message_queue.put((client_socket, decrypted_message.decode('utf-8')))
 
         except socket.error:
             print("Client lost.")
@@ -114,6 +110,9 @@ if __name__ == '__main__':
     # generate dungeon
     my_dungeon = dungeon.Dungeon()
     input_manager = input.Input()
+
+    # Set the encryption key in the input manager
+    input_manager.encryption_key = encryption_key
 
     # start the thread that accepts new clients
     my_accept_thread = threading.Thread(target=accept_clients, args=(my_socket, ))
