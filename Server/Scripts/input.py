@@ -95,9 +95,9 @@ class Input:
     def print_help(self):
         return 'Possible commands: \n north - travel north \n east - travel east \n south - travel south' \
                '\n west - travel west \n look - look around current location \n' \
-               ' say <text> - talk to everyone in your room \n pickup <item_name> - pickup and item in a room\n ' \
-               'drop <item_name> - drop item in the room \n equip <item_name> - equip yourself with an item in your inventory \n ' \
-               'unequip <item_name> - take off an equipped item and store it in your inventory \n check inventory - see whats in your inventory \n check equipment - see what you have equipped\n'
+               ' say <text> - talk to everyone in your room \n' #'' pickup <item_name> - pickup and item in a room\n ' \
+               #'drop <item_name> - drop item in the room \n equip <item_name> - equip yourself with an item in your inventory \n ' \
+               #'unequip <item_name> - take off an equipped item and store it in your inventory \n check inventory - see whats in your inventory \n check equipment - see what you have equipped\n'
 
     def move_room(self, direction, my_player):
         # Get the players current_room
@@ -246,6 +246,8 @@ class Input:
                     # Remove client from login area
                     self.clients_login_area.remove(self.current_client)
                     message = 'Logged in as ' + split_input[0]
+                    self.send_message(message, client)
+                    message = 'Type help to view a list of all commands!'
                     self.send_message(message, client)
                 # If they don't own the player tell them
                 else:
