@@ -14,7 +14,7 @@ import threading
 import socket
 import json
 
-local_host = False
+local_host = True
 
 
 class Client:

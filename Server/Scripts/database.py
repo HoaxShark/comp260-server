@@ -68,7 +68,11 @@ class Database:
         self.cursor.execute('SELECT current_room FROM players WHERE player_name = ?',
                             (my_player,))
         result = self.cursor.fetchone()  # retrieve the first row
-        return result[0]
+        # check result is not none
+        if result is not None:
+            return result[0]
+        else:
+            return 0
 
     # Gets the players current room
     def set_current_room(self, my_player, new_room):
