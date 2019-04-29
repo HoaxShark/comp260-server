@@ -28,7 +28,7 @@ message_queue = Queue()
 lost_clients = []
 
 # True if testing on a local host
-local_host = True
+local_host = False
 
 db = database.Database()
 
