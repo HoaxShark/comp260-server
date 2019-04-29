@@ -46,6 +46,7 @@ def receive_thread(client_socket):
                 # Get size of incoming data
                 payload_size = int.from_bytes(client_socket.recv(2), 'little')
                 payload_data = client_socket.recv(payload_size)
+                payload_data = payload_data.decode('utf-8')
                 # Get payload data is a dict format
                 data_from_client = json.loads(payload_data)
                 # Decrypt data
