@@ -112,7 +112,10 @@ class Database:
                 item_name = self.get_item_name(item)
                 if item_name != None:
                     all_items += item_name + ' '
-            return all_items
+            if all_items == '':
+                return None
+            else:
+                return all_items
         else:
             return None
 
@@ -128,10 +131,14 @@ class Database:
             split_input = result[0].split(',')
             # For every item get its name and add to a message to return
             for item in split_input:
-                if item != '':
+                if item != '' or item != ' ':
                     item_name = self.get_item_name(item)
-                    all_items += item_name + ' '
-            return all_items
+                    if item_name is not None:
+                        all_items += item_name + ' '
+            if all_items == '':
+                return None
+            else:
+                return all_items
         else:
             return None
 
@@ -141,17 +148,18 @@ class Database:
         if item_id is not None:
             # Check room location for item
             result = self.get_all_items_in_room(room_id)
-            split_input = result.split(' ')
-            for item in split_input:
-                # If the item is in the room give it to the player
-                if item == item_name:
-                    self.give_item_to_player(item_id, my_player)
-                    # remove item from room
-                    self.remove_item_from_room(item_id, room_id)
-                    # return item moved
-                    return 'You have pickup up ' + item_name
-                else:
-                    return 'No item by that name in this location'
+            if result is not None:
+                split_input = result.split(' ')
+                for item in split_input:
+                    # If the item is in the room give it to the player
+                    if item == item_name:
+                        self.give_item_to_player(item_id, my_player)
+                        # remove item from room
+                        self.remove_item_from_room(item_id, room_id)
+                        # return item moved
+                        return 'You have pickup up ' + item_name
+                return 'No item by that name in this location'
+            return 'No item by that name in this location'
         # if no return no item in location
         else:
             return 'No item by that name in this location'
@@ -164,8 +172,12 @@ class Database:
         if result != None:
             split_input = result.split(' ')
             for item in split_input:
-                all_items += item + ','
-        all_items += str(item_id) + ','
+                # GET ID FOR STORING IF NONE DONT STORE
+                current_item_id = self.get_item_id(item)
+                if current_item_id is not None:
+                    all_items += str(current_item_id) + ','
+        if item_id is not None:
+            all_items += str(item_id) + ','
         self.cursor.execute('UPDATE players SET player_inventory = ? WHERE player_name = ?',
                             (all_items, my_player,))
         self.db.commit()
