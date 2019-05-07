@@ -337,16 +337,18 @@ class Input:
                     return "You can only check your inventory or equipment.\n"
 
             elif self.lowered_input == 'look':
-                #all_items = 'Items in room: '
-                #for item in my_dungeon.rooms[my_player.current_room].items:
-                #    all_items += item.name + '\n'
-                #if my_dungeon.rooms[my_player.current_room].items:#
-                #    return my_dungeon.rooms[my_player.current_room].look_description + '\n' + all_items
-                #else:
+                # Get the current room
                 current_room = self.db.get_current_room(my_player)
-                reply_to_player = self.db.get_value('dungeon', 'detailed_description', 'room_id', current_room)
 
-                return reply_to_player
+                if self.db.get_all_items_in_room(current_room) != None:
+                    all_items = 'Items in room: '
+                    # Get all item sin the room
+                    all_items += self.db.get_all_items_in_room(current_room) + '\n'
+                    reply_to_player = self.db.get_value('dungeon', 'detailed_description', 'room_id', current_room) + '\n' + all_items
+                    return reply_to_player
+                else:
+                    reply_to_player = self.db.get_value('dungeon', 'detailed_description', 'room_id', current_room)
+                    return reply_to_player
 
             #  Move between rooms
             elif self.lowered_input == 'north':

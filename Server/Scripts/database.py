@@ -12,6 +12,7 @@ class Database:
         self.create_dungeon_table()
         self.create_player_table()
         self.create_user_table()
+        self.create_item_table()
 
     # Adds a new user to the db
     def add_user(self, username, password, salt):
@@ -74,6 +75,35 @@ class Database:
         else:
             return 0
 
+    # Gets the items name
+    def get_item_name(self, item_id):
+        self.cursor.execute('SELECT item_name FROM items WHERE item_id = ?',
+                            (item_id,))
+        result = self.cursor.fetchone()  # retrieve the first row
+        # check result is not none
+        if result is not None:
+            return result[0]
+        else:
+            return
+
+    # Gets all items current room
+    def get_all_items_in_room(self, room_id):
+        self.cursor.execute('SELECT room_items FROM dungeon WHERE room_id = ?',
+                            (room_id,))
+        result = self.cursor.fetchone()  # retrieve the first row
+        # check result is not none
+        if result[0] != None:
+            all_items = ''
+            # Split the string of items into a list
+            split_input = result[0].split(',')
+            # For every item get its name and add to a message to return
+            for item in split_input:
+                item_name = self.get_item_name(item)
+                all_items += item_name + ' '
+            return all_items
+        else:
+            return None
+
     # Gets the players current room
     def set_current_room(self, my_player, new_room):
         self.cursor.execute('UPDATE players SET current_room = ? WHERE player_name = ?',
@@ -108,7 +138,9 @@ class Database:
                         id INTEGER PRIMARY KEY, 
                         owner_username TEXT, 
                         current_room INTEGER DEFAULT 1, 
-                        player_name TEXT)
+                        player_name TEXT,
+                        player_inventory TEXT,
+                        player_equipment TEXT)
                         ''')
         # commit the change
         self.db.commit()
@@ -125,8 +157,24 @@ class Database:
                         north INTEGER DEFAULT '', 
                         east INTEGER DEFAULT '', 
                         south INTEGER DEFAULT '', 
-                        west INTEGER DEFAULT '')
+                        west INTEGER DEFAULT '',
+                        room_items TEXT)
                         ''')
         # commit the change
         self.db.commit()
         print('Dungeon table created')
+
+    # Create table to store all items
+    def create_item_table(self):
+        self.cursor.execute('''
+                        CREATE TABLE IF NOT EXISTS items(
+                        item_id INTEGER PRIMARY KEY, 
+                        item_name TEXT,
+                        item_weight TEXT,
+                        item_body_part TEXT,
+                        item_damage TEXT,
+                        item_defence)
+                        ''')
+        # commit the change
+        self.db.commit()
+        print('Item table created')
