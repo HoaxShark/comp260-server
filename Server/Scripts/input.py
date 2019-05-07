@@ -278,18 +278,11 @@ class Input:
                 split_input.pop(0)
                 # store item name
                 item_name = ''.join(split_input)
-                # check if that item is in the room
-                for item in my_dungeon.rooms[my_player.current_room].items:
-                    # if item the player is trying to pick up matches the item in a room
-                    if item_name == item.name.lower():
-                        # give that item to the player
-                        my_player.inventory[item] = item.name
-                        # delete the item from the room
-                        del my_dungeon.rooms[my_player.current_room].items[item]
-                        # inform the player they got the item
-                        return 'You have picked up ' + item_name
-                # no matching item was found
-                return 'No such item here.'
+                # Get the current room
+                current_room = self.db.get_current_room(my_player)
+                # Pickup the item
+                reply = self.db.pickup_item(item_name, my_player, current_room)
+                return reply
 
             elif first_word == 'drop':
                 # pop the first word out of the list

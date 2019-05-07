@@ -86,6 +86,17 @@ class Database:
         else:
             return
 
+    # Gets the items id
+    def get_item_id(self, item_name):
+        self.cursor.execute('SELECT item_id FROM items WHERE item_name = ?',
+                            (item_name,))
+        result = self.cursor.fetchone()  # retrieve the first row
+        # check result is not none
+        if result is not None:
+            return result[0]
+        else:
+            return None
+
     # Gets all items current room
     def get_all_items_in_room(self, room_id):
         self.cursor.execute('SELECT room_items FROM dungeon WHERE room_id = ?',
@@ -99,12 +110,89 @@ class Database:
             # For every item get its name and add to a message to return
             for item in split_input:
                 item_name = self.get_item_name(item)
-                all_items += item_name + ' '
+                if item_name != None:
+                    all_items += item_name + ' '
             return all_items
         else:
             return None
 
-    # Gets the players current room
+    # Gets all items in players inventory
+    def get_all_items_in_inventory(self, my_player):
+        self.cursor.execute('SELECT player_inventory FROM players WHERE player_name = ?',
+                            (my_player,))
+        result = self.cursor.fetchone()  # retrieve the first row
+        # check result is not none
+        if result[0] != None:
+            all_items = ''
+            # Split the string of items into a list
+            split_input = result[0].split(',')
+            # For every item get its name and add to a message to return
+            for item in split_input:
+                if item != '':
+                    item_name = self.get_item_name(item)
+                    all_items += item_name + ' '
+            return all_items
+        else:
+            return None
+
+    def pickup_item(self, item_name, my_player, room_id):
+        # Get item id
+        item_id = self.get_item_id(item_name)
+        if item_id is not None:
+            # Check room location for item
+            result = self.get_all_items_in_room(room_id)
+            split_input = result.split(' ')
+            for item in split_input:
+                # If the item is in the room give it to the player
+                if item == item_name:
+                    self.give_item_to_player(item_id, my_player)
+                    # remove item from room
+                    self.remove_item_from_room(item_id, room_id)
+                    # return item moved
+                    return 'You have pickup up ' + item_name
+                else:
+                    return 'No item by that name in this location'
+        # if no return no item in location
+        else:
+            return 'No item by that name in this location'
+
+    # Give item to player
+    def give_item_to_player(self, item_id, my_player):
+        # get all items of player
+        result = self.get_all_items_in_inventory(my_player)
+        all_items = ''
+        if result != None:
+            split_input = result.split(' ')
+            for item in split_input:
+                all_items += item + ','
+        all_items += str(item_id) + ','
+        self.cursor.execute('UPDATE players SET player_inventory = ? WHERE player_name = ?',
+                            (all_items, my_player,))
+        self.db.commit()
+
+    # Removes an item from a room
+    def remove_item_from_room(self, item_id, room_id):
+        result = self.get_all_items_in_room(room_id)
+        split_input = result.split(' ')
+        all_items = ''
+        removed = False
+        for item in split_input:
+            current_item_id = self.get_item_id(item)
+            # If the item matches but hasn't been removed yet, skip it and set removed to true
+            if current_item_id == item_id and removed is False:
+                removed = True
+            # If the item matches but one has already been removed add it back to the list
+            elif current_item_id == item_id and removed is True:
+                all_items += str(current_item_id) + ','
+            # all items that don't match go back in the list
+            elif current_item_id != item_id and current_item_id is not None:
+                all_items += str(current_item_id) + ','
+        # Set new items in db and update
+        self.cursor.execute('UPDATE dungeon SET room_items = ? WHERE room_id = ?',
+                            (all_items, room_id,))
+        self.db.commit()
+
+    # Sets the players current room
     def set_current_room(self, my_player, new_room):
         self.cursor.execute('UPDATE players SET current_room = ? WHERE player_name = ?',
                             (new_room, my_player,))
