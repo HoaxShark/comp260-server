@@ -1,3 +1,0 @@
-Make old input functions read from the DB so they work again
-
-When moving rooms if a player hasn't yet selected their character it crashes the server
