@@ -1,6 +1,6 @@
-## To swap between local testing and online play with the OD server change local_host in __main__.py to true for using a local server and false for the OD server.
+## To swap between local testing and online play with the DO server change local_host in __main__.py to true for using a local server and false for the DO server.
 
-## A build of the client is avaliable at /Client Build/dist/__main__/__main__.exe this build is set for the OD server only
+## A build of the client is avaliable at /Client Build/dist/__main__/__main__.exe this build is set for the DO server only
 
 # The Best MUD
 
