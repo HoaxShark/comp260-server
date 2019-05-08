@@ -288,18 +288,11 @@ class Input:
                 split_input.pop(0)
                 # store item name
                 item_name = ''.join(split_input)
-                # check if that item is in the room
-                for item in my_player.inventory:
-                    # if item the player is trying to pick up matches the item in a room
-                    if item_name == item.name.lower():
-                        # give that item to the room
-                        my_dungeon.rooms[my_player.current_room].items[item] = item.name
-                        # delete the item from the player
-                        del my_player.inventory[item]
-                        # inform the player they got the item
-                        return 'You have dropped ' + item_name
-                # no matching item was found
-                return 'No such item in your inventory.'
+                # Get the current room
+                current_room = self.db.get_current_room(my_player)
+                # Pickup the item
+                reply = self.db.drop_item(item_name, my_player, current_room)
+                return reply
 
             # player can check their inventory or equipment
             elif first_word == 'check':
@@ -308,9 +301,13 @@ class Input:
                 # store item name
                 what_to_check = ''.join(split_input)
                 if what_to_check.lower() == "inventory":
-                    reply = 'You have: '
-                    reply += self.db.get_all_items_in_inventory(my_player)
-                    return reply
+                    all_items = self.db.get_all_items_in_inventory(my_player)
+                    if all_items != None:
+                        reply = 'You have: '
+                        reply += self.db.get_all_items_in_inventory(my_player) + '\n'
+                        return reply
+                    else:
+                        return "You have no items.\n"
                 else:
                     return "You can only check your inventory.\n"
 
@@ -330,16 +327,16 @@ class Input:
 
             #  Move between rooms
             elif self.lowered_input == 'north':
-                return self.move_room('north', my_player)
+                return self.move_room('north', my_player) + '\n'
 
             elif self.lowered_input == 'east':
-                return self.move_room('east', my_player)
+                return self.move_room('east', my_player) + '\n'
 
             elif self.lowered_input == 'south':
-                return self.move_room('south', my_player)
+                return self.move_room('south', my_player) + '\n'
 
             elif self.lowered_input == 'west':
-                return self.move_room('west', my_player)
+                return self.move_room('west', my_player) + '\n'
 
             #  Print list of commands
             elif self.lowered_input == 'help':
