@@ -111,7 +111,7 @@ class Input:
             clients_in_room = self.check_room_for_players(my_player)
             reply_to_player = self.db.get_value('dungeon', 'base_description', 'room_id', connection_id)
             if clients_in_room:
-                reply_to_player += "You see - "
+                reply_to_player += "\n You see - "
                 for client in clients_in_room:
                     reply_to_player += self.all_connected_clients[client] + " - "
                 reply_to_player += "in the room already.\n"
@@ -121,12 +121,11 @@ class Input:
             return 'There is no path this way'
 
     # manages all input from clients
-    def player_input(self, current_input, client, dungeon):
+    def player_input(self, current_input, client):
         self.current_input = current_input  # Get input from player
         self.current_client = client
         self.lowered_input = current_input.lower()  # Transform to lowercase
 
-        my_dungeon = dungeon
         my_player = self.all_connected_clients.get(client)
         # split the player input string
         split_input = current_input.split(' ', 1)

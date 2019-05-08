@@ -11,7 +11,6 @@ from Crypto.Random import get_random_bytes
 
 from queue import *
 from Scripts import input
-from Scripts import dungeon
 from Scripts import database
 
 # Generate the encryption key for this instance
@@ -109,7 +108,6 @@ if __name__ == '__main__':
     my_socket.listen(5)
 
     # generate input manager
-    my_dungeon = dungeon.Dungeon()
     input_manager = input.Input()
 
     # Set the encryption key in the input manager
@@ -127,7 +125,7 @@ if __name__ == '__main__':
             try:
                 client_and_message = message_queue.get()
                 # send input from client to the input manager
-                client_reply = input_manager.player_input(client_and_message[1], client_and_message[0], my_dungeon)
+                client_reply = input_manager.player_input(client_and_message[1], client_and_message[0])
                 if client_reply is not None:
                     # send back the data received
                     input_manager.send_message(client_reply, client_and_message[0])
