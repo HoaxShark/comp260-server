@@ -313,8 +313,13 @@ class Input:
                 current_room = self.db.get_current_room(my_player)
 
                 if self.db.get_all_items_in_room(current_room) != None:
+                    items_in_room = self.db.get_all_items_in_room(current_room)
+                    split_input = items_in_room.split(' ')
                     all_items = 'Items in room: '
-                    all_items += self.db.get_all_items_in_room(current_room) + '\n'
+                    for item in split_input:
+                        if item != '':
+                            all_items += item + ' - '
+                    all_items += '\n'
                     reply_to_player = self.db.get_value('dungeon', 'detailed_description', 'room_id', current_room) + '\n' + all_items
                     return reply_to_player
                 else:
