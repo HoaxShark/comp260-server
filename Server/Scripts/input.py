@@ -193,9 +193,10 @@ class Input:
                     # Reset the username as the password was wrong
                     self.all_connected_clients[client] = 0
 
-            # Create new account, format: username password salt?
+            # Create new account, format: username password salt
+            # This is called automatically by the client once the user gets past the initial account creation step
+            # Receives the username and hashed password from the user to be stored in the database
             elif first_word == '#create_account':
-                # pop the first word out of the list
                 split_input.pop(0)
                 # split the username and password
                 split_input = split_input[0].split(' ')
@@ -211,9 +212,10 @@ class Input:
                     message = 'User added, please log in. \n'
                     self.send_message(message, client)
 
-            # Create new account, format: username password salt?
+            # Create new account, format: username password salt
+            # Check the account name doesn't already exist, if it does tell the user and cancel creation
+            # If it doesn't then create the new account
             elif first_word == 'create':
-                # pop the first word out of the list
                 split_input.pop(0)
                 exists = self.db.check_value('players', 'player_name', split_input[0], 'player_name', split_input[0])
                 if exists:
@@ -224,10 +226,10 @@ class Input:
                     message = 'Player added, please use select then player name. \n'
                     self.send_message(message, client)
 
+            # User trying to select a player, checks selected name vs all players that the user owns
+            # if they own the player then apply that name to them and move them into the play area
             elif first_word == 'select':
-                # pop the first word out of the list
                 split_input.pop(0)
-                # If this user owns the player they are trying to log in as
                 player_is_owned = False
                 # Get all players owned by the user
                 owned_players = self.db.get_all_values('players', 'player_name', 'owner_username', my_player)
@@ -256,14 +258,12 @@ class Input:
         # If client is in the play area they can then access the play commands
         elif client in self.clients_play_area:
 
-            # if trying to talk send message to all other clients in the room
+            # If trying to talk send message to all other clients in the room and let the player know what they said
             if first_word == 'say':
-                # pop the first word out of the list
                 split_input.pop(0)
                 # reform the list into a string
                 message_to_say = '<font color="blue">' + my_player + ': '
                 message_to_say += ''.join(split_input) + '</font>'
-                # create and send message to input client about what they said
                 message_to_yourself = '<font color="dark blue">You say: ' + ''.join(split_input) + '</font>'
                 self.send_message(message_to_yourself, client)
                 # send message to all clients in room
@@ -294,11 +294,9 @@ class Input:
                 reply = self.db.drop_item(item_name, my_player, current_room)
                 return reply
 
-            # player can check their inventory or equipment
+            # Player check their inventory, lists all items the player has or tells them they have no items
             elif first_word == 'check':
-                # pop the first word out of the list
                 split_input.pop(0)
-                # store item name
                 what_to_check = ''.join(split_input)
                 if what_to_check.lower() == "inventory":
                     all_items = self.db.get_all_items_in_inventory(my_player)
@@ -311,13 +309,12 @@ class Input:
                 else:
                     return "You can only check your inventory.\n"
 
+            # Get the detailed room description and check the room for any items, if they exist add this information to the player reply
             elif self.lowered_input == 'look':
-                # Get the current room
                 current_room = self.db.get_current_room(my_player)
 
                 if self.db.get_all_items_in_room(current_room) != None:
                     all_items = 'Items in room: '
-                    # Get all item sin the room
                     all_items += self.db.get_all_items_in_room(current_room) + '\n'
                     reply_to_player = self.db.get_value('dungeon', 'detailed_description', 'room_id', current_room) + '\n' + all_items
                     return reply_to_player
@@ -325,7 +322,7 @@ class Input:
                     reply_to_player = self.db.get_value('dungeon', 'detailed_description', 'room_id', current_room)
                     return reply_to_player
 
-            #  Move between rooms
+            #  Move between rooms depending on the direction given by player
             elif self.lowered_input == 'north':
                 return self.move_room('north', my_player) + '\n'
 

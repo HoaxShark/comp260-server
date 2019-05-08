@@ -108,7 +108,7 @@ if __name__ == '__main__':
     # listen for new connections / waits here until a client connects
     my_socket.listen(5)
 
-    # generate dungeon
+    # generate input manager
     my_dungeon = dungeon.Dungeon()
     input_manager = input.Input()
 
