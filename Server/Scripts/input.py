@@ -95,9 +95,8 @@ class Input:
     def print_help(self):
         return 'Possible commands: \n north - travel north \n east - travel east \n south - travel south' \
                '\n west - travel west \n look - look around current location \n' \
-               ' say <text> - talk to everyone in your room \n' #'' pickup <item_name> - pickup and item in a room\n ' \
-               #'drop <item_name> - drop item in the room \n equip <item_name> - equip yourself with an item in your inventory \n ' \
-               #'unequip <item_name> - take off an equipped item and store it in your inventory \n check inventory - see whats in your inventory \n check equipment - see what you have equipped\n'
+               ' say <text> - talk to everyone in your room \n pickup <item_name> - pickup and item in a room\n ' \
+               'drop <item_name> - drop item in the room \n check inventory - see whats in your inventory \n'
 
     def move_room(self, direction, my_player):
         # Get the players current_room
@@ -302,20 +301,6 @@ class Input:
                 # no matching item was found
                 return 'No such item in your inventory.'
 
-            elif first_word == 'equip':
-                # pop the first word out of the list
-                split_input.pop(0)
-                # store item name
-                item_name = ''.join(split_input)
-                return my_player.equip_item(item_name)
-
-            elif first_word == 'unequip':
-                # pop the first word out of the list
-                split_input.pop(0)
-                # store item name
-                item_name = ''.join(split_input)
-                return my_player.unequip_item(item_name)
-
             # player can check their inventory or equipment
             elif first_word == 'check':
                 # pop the first word out of the list
@@ -323,11 +308,11 @@ class Input:
                 # store item name
                 what_to_check = ''.join(split_input)
                 if what_to_check.lower() == "inventory":
-                    return my_player.check_items("inventory")
-                elif what_to_check.lower() == "equipment":
-                    return my_player.check_items("equipment")
+                    reply = 'You have: '
+                    reply += self.db.get_all_items_in_inventory(my_player)
+                    return reply
                 else:
-                    return "You can only check your inventory or equipment.\n"
+                    return "You can only check your inventory.\n"
 
             elif self.lowered_input == 'look':
                 # Get the current room

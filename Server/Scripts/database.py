@@ -119,10 +119,10 @@ class Database:
         else:
             return None
 
-    # Gets all items in players inventory
-    def get_all_items_in_inventory(self, my_player):
-        self.cursor.execute('SELECT player_inventory FROM players WHERE player_name = ?',
-                            (my_player,))
+    # Gets all items in players inventory, gets the names of those items and forms them into a string to return
+    def get_all_items_in_room(self, room_id):
+        self.cursor.execute('SELECT room_items FROM dungeon WHERE room_id = ?',
+                            (room_id,))
         result = self.cursor.fetchone()  # retrieve the first row
         # check result is not none
         if result[0] != None:
@@ -135,6 +135,28 @@ class Database:
                     item_name = self.get_item_name(item)
                     if item_name is not None:
                         all_items += item_name + ' '
+            if all_items == '':
+                return None
+            else:
+                return all_items
+        else:
+            return None
+
+    # Gets all items in the players inventory, gets the names of those items and forms them into a string to return
+    def get_all_items_in_inventory(self, my_player):
+        self.cursor.execute('SELECT player_inventory FROM players WHERE player_name = ?',
+                            (my_player,))
+        result = self.cursor.fetchone()  # retrieve the first row
+        # check result is not none
+        if result[0] != None:
+            all_items = ''
+            # Split the string of items into a list
+            split_input = result[0].split(',')
+            # For every item get its name and add to a message to return
+            for item in split_input:
+                item_name = self.get_item_name(item)
+                if item_name != None:
+                    all_items += item_name + ' '
             if all_items == '':
                 return None
             else:
