@@ -2,6 +2,8 @@
 
 ## A build of the client is avaliable at /Client Build/dist/__main__/__main__.exe this build is set for the DO server only
 
+## Server and client are using python 3.6
+
 # The Best MUD
 
 To help with the creation of this client server MUD I have created some useful design documents to steer the way I create the client and server. All images can also be found in the Design Documents folder.
